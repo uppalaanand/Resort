@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { Room, Banquet } from '../types';
 import { Calendar, Clock, Users, Info, User, Phone, CheckCircle, Star } from 'lucide-react';
 import { getImageUrl } from '../utils/images';
+import SuccessModal from "../components/SuccessModal";
 
 const Booking = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -30,6 +31,8 @@ const Booking = () => {
     const [checkingAvailability, setCheckingAvailability] = useState(false);
     const [requested, setRequested] = useState(false);
     // const [totalPrice, setTotalPrice] = useState(0);
+    const [successOpen, setSuccessOpen] = useState(false);
+
 
 
 
@@ -115,7 +118,8 @@ const Booking = () => {
         } else {
             await api.createBanquetBooking(bookingData);
         }
-        navigate('/profile');
+        setSuccessOpen(true);
+        // navigate('/profile');
     } catch (err: any) {
         setError(err.message || 'Booking failed');
     } finally {
@@ -450,6 +454,23 @@ useEffect(() => {
             </form>
         </div>
       </div>
+      <SuccessModal
+            open={successOpen}
+            title={
+                requested
+                ? "Request Submitted!"
+                : "Booking Confirmed!"
+            }
+            description={
+                requested
+                ? "Your booking request has been sent. Our team will contact you shortly."
+                : "Your booking was successful. We look forward to hosting you!"
+            }
+            onClose={() => {
+                setSuccessOpen(false);
+                navigate("/profile");
+            }}
+            />
     </div>
   );
 };

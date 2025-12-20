@@ -21,6 +21,7 @@ const app = express();
 
 app.use(cors() as any);
 app.use(express.json() as any);
+app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 
@@ -44,8 +45,5 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
-// app.listen(PORT, () => {
-//     console.log(`Server is listening on port ${PORT}`);
-// });
 
 export default app;

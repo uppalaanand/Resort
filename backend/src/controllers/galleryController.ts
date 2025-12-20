@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import Gallery from "../models/Gallery";
 
+// Helper to map uploaded files to URLs
+const getImageUrls = (files: Express.Multer.File[] | undefined) => {
+  if (!files) return [];
+  return files.map((file) => file.path); // Cloudinary URLs
+};
+
 /* ---------------- CREATE GALLERY IMAGE ---------------- */
 export const createGallery = asyncHandler(
   async (req: Request, res: Response) => {
@@ -12,7 +18,7 @@ export const createGallery = asyncHandler(
       throw new Error("Please upload at least one image");
     }
 
-    const images = files.map((file) => file.path);
+    const images = getImageUrls(files);
 
     const { category, alt } = req.body;
 

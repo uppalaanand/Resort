@@ -72,7 +72,7 @@ const RoomRequests = () => {
               {/* Header */}
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold flex items-center gap-2">
-                  <Home size={18} /> {booking.room.name}
+                  <Home size={18} /> {booking.room?.name}
                 </h2>
                 <span className="px-3 py-1 text-xs font-bold rounded-full bg-yellow-100 text-yellow-700">
                   REQUESTED

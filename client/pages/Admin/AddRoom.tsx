@@ -407,8 +407,10 @@ const AddRoom = () => {
             <label className="block text-sm mb-1">Room Type</label>
             <input
               type="text"
-              value="Luxury Suite"
-              className="w-full border px-3 py-2 rounded bg-gray-50"
+              name="name"
+              value={roomData.name}
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded"
             />
           </div>
           <div>

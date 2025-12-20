@@ -2,13 +2,20 @@ import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import BanquetHall from '../models/BanquetHall';
 
+// Helper to map uploaded files to URLs
+const getImageUrls = (files: Express.Multer.File[] | undefined) => {
+  if (!files) return [];
+  return files.map((file) => file.path); // Cloudinary URLs
+};
+
 // @desc    Create a banquet
 // @route   POST /api/banquets
 // @access  Private/Admin
 export const createBanquet = asyncHandler(async (req: Request, res: Response) => {
     const files = req.files as Express.Multer.File[];
 
-    const images = files.map(file => file.path);
+    // const images = files.map(file => file.path);
+    const images = getImageUrls(req.files as Express.Multer.File[]);
 
     const newBanquet = await BanquetHall.create({
       ...req.body,

@@ -2,7 +2,7 @@
 import { AuthResponse, Room, Banquet, Booking, Review, Activity, GalleryImage, Event } from '../types';
 import { ROOMS, BANQUETS, MOCK_BOOKINGS, MOCK_REVIEWS, MOCK_USER, MOCK_ADMIN } from '../constants';
 
-const API_URL = 'resort-4x9p-jik1rc54n-uppalaanands-projects.vercel.app/api';
+const API_URL = 'resort-4x9p.vercel.app/api';
 
 const getToken = () => {
   const user = localStorage.getItem('vp_user');

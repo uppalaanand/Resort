@@ -1,4 +1,4 @@
-const API_URL = "resort-wvod.vercel.app";
+const API_URL = "resort-4x9p-jik1rc54n-uppalaanands-projects.vercel.app";
 
 const getImageUrl = (path: string) => {
   if (!path) return "";

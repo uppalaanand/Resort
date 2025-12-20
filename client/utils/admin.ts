@@ -1,4 +1,4 @@
-const API_URL = 'resort-wvod.vercel.app/api';
+const API_URL = 'resort-4x9p-jik1rc54n-uppalaanands-projects.vercel.app/api';
 
 const getToken = () => {
   const user = localStorage.getItem('vp_user');

@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000";
+const API_URL = "resort-wvod.vercel.app";
 
 const getImageUrl = (path: string) => {
   if (!path) return "";

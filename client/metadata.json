@@ -1,0 +1,5 @@
+{
+  "name": "Four Leaf Resort - Luxury Stays",
+  "description": "A full-stack style MERN frontend for a luxury resort booking system. Features room browsing, banquet booking, user authentication simulation, and an admin dashboard.",
+  "requestFramePermissions": []
+}

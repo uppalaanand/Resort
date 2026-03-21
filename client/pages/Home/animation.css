@@ -38,3 +38,64 @@
     transform: translateX(0);
   }
 }
+
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        scale: 0.7;
+    }
+    to {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+.appear-animation {
+    opacity: 0;
+}
+
+.appear-animation.play {
+    animation: appear 0.8s ease-out forwards;
+}
+
+@keyframes appear1 {
+    from {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.service-card {
+    opacity: 0;
+}
+
+.service-card.play {
+    animation: appear1 0.8s ease-out forwards;
+}
+
+/* Featured Room Fade + Scale Animation */
+@keyframes featuredAppear {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.featured-card {
+  opacity: 0;
+  transform: translateY(40px) scale(0.95);
+  transition: opacity 0.3s ease-out;
+}
+
+.featured-card.play {
+  animation: featuredAppear 0.8s ease-out forwards;
+}

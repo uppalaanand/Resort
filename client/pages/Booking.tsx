@@ -230,7 +230,7 @@ useEffect(() => {
             {error && (
                 <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-8 text-sm border border-red-200 flex items-start gap-3">
                    <div className="mt-0.5"><Info size={16}/></div>
-                   <div><span className="font-bold">Error:</span> {error.message}</div>
+                   <div><span className="font-bold">Error:</span> {error}</div>
                 </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-8">

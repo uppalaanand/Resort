@@ -136,6 +136,18 @@ const banquetBookings = bookings.filter(
                   <strong>Special Request:</strong> {booking.specialRequests}
                 </div>
               )}
+              Status:
+              <span
+                      className={`px-3 py-1 rounded-full ${
+                        booking.status === "Confirmed"
+                          ? "bg-green-100 text-green-700"
+                          : booking.status === "Pending"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {booking.status}
+                    </span>
 
               {/* Footer */}
               <div className="flex justify-between items-center pt-4 border-t">

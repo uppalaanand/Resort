@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import BanquetHall from '../models/BanquetHall';
+import { deleteCache, deleteMultipleCache, getCache, setCache } from '../utils/cache';
 
 // Helper to map uploaded files to URLs
 const getImageUrls = (files: Express.Multer.File[] | undefined) => {
@@ -22,34 +23,97 @@ export const createBanquet = asyncHandler(async (req: Request, res: Response) =>
       images,
     });
 
+    // Invalidate cache for banquets list
+    await deleteCache('banquets:all');
+
   (res as any).status(201).json(newBanquet);
 });
 
+//Before Caching
+// @decs   Get all banquets
+// @route   GET /api/banquets
+// @access  Public
+// export const getBanquets = asyncHandler(async (req: Request, res: Response) => {
+//     const banquets = await BanquetHall.find({ isActive: true });
+//     if(banquets) {
+//         (res as any).json(banquets);
+//     }else{
+//         (res as any).status(404);
+//         throw new Error('No banquets found');
+//     }
+// });
+
+
+//After Caching
 // @decs   Get all banquets
 // @route   GET /api/banquets
 // @access  Public
 export const getBanquets = asyncHandler(async (req: Request, res: Response) => {
-    const banquets = await BanquetHall.find({ isActive: true });
-    if(banquets) {
-        (res as any).json(banquets);
-    }else{
-        (res as any).status(404);
-        throw new Error('No banquets found');
-    }
+  //create a cache key for all banquets
+  const cacheKey = 'banquets:all';
+  // Try to get from cache
+  const cachedData = await getCache(cacheKey);
+  // If cached data exists, return it
+  if(cachedData) {
+    // console.log("Serving banquets from Redis");
+    return (res as any).json(cachedData);
+  }
+  // If no cache, fetch from DB
+  const banquets = await BanquetHall.find({ isActive: true });
+  // Return the response
+  if(banquets) {
+    // Store in cache for future requests for 1 hour (3600 seconds)
+    await setCache(cacheKey, banquets, 3600);
+    // console.log("Serving banquets from MongoDB");
+    (res as any).json(banquets);
+  }else{
+    (res as any).status(404);
+    throw new Error('No banquets found');
+  }
 });
 
+//Before Caching
+// @desc    Get banquet by ID
+// @route   GET /api/banquets/:id
+// @access  Public
+// export const getBanquetById = asyncHandler(async (req: Request, res: Response) => {
+//     const banquet = await BanquetHall.findById(req.params.id);
+
+//     if(banquet) {
+//         (res as any).json(banquet);
+//     }else{
+//         (res as any).status(404);
+//         throw new Error('Banquet not found');
+//     }
+// });
+
+
+//After Caching
 // @desc    Get banquet by ID
 // @route   GET /api/banquets/:id
 // @access  Public
 export const getBanquetById = asyncHandler(async (req: Request, res: Response) => {
-    const banquet = await BanquetHall.findById(req.params.id);
-
-    if(banquet) {
-        (res as any).json(banquet);
-    }else{
-        (res as any).status(404);
-        throw new Error('Banquet not found');
-    }
+  // Create a cache key specific to this banquet ID
+  const cacheKey = `banquet:${req.params.id}`;
+  // Try to get banquet from cache
+  const cachedBanquet = await getCache(cacheKey);
+  // If found in cache, return it
+  if(cachedBanquet) {
+    // console.log(`Serving banquet ${req.params.id} from Redis`);
+    return (res as any).json(cachedBanquet);
+  }
+  // If not in cache, fetch from DB
+  const banquet = await BanquetHall.findById(req.params.id);
+  // Return the response
+  if(banquet) {
+    // Store in cache for future requests for 1 hour (3600 seconds)
+    await setCache(cacheKey, banquet, 3600);
+    // console.log(`Serving banquet ${req.params.id} from MongoDB`);
+    (res as any).json(banquet);
+  }else{
+    (res as any).status(404);
+    throw new Error('Banquet not found');
+  }
 });
 
 // // @desc    Update a banquet
@@ -124,6 +188,12 @@ export const updateBanquete = asyncHandler(async (req: Request, res: Response) =
   }
 
   const updatedBanquet = await banquet.save();
+  // Invalidate cache for this banquet and banquets list
+  await deleteMultipleCache([
+    `banquet:${req.params.id}`,
+    'banquets:all'
+  ])
+  // Return updated banquet
   res.json(updatedBanquet);
 });
 
@@ -137,6 +207,11 @@ export const deleteBanquet = asyncHandler(async (req: Request, res: Response) =>
     if(banquet) {
         banquet.isActive = false;
         await banquet.save();
+        // Invalidate cache for this banquet and banquets list
+        await deleteMultipleCache([
+            "banquets:all",
+            `banquet:${req.params.id}`
+        ]);
         (res as any).json({ message: 'Banquet hall deactivated' });
     }else{
         (res as any).status(404);

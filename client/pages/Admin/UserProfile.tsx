@@ -22,7 +22,7 @@ const UserProfile = () => {
         setUser(userData);
 
         const userBookings = await api.getBookingsByUser(id); // ADMIN API
-        setBookings(userBookings);
+        setBookings(userBookings as any[]);
       } catch (error) {
         console.error(error);
       } finally {

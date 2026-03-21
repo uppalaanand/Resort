@@ -3,6 +3,8 @@ import asyncHandler from 'express-async-handler';
 import Booking from '../models/Booking';
 import Room from '../models/Room';
 import BanquetHall from '../models/BanquetHall';
+import mongoose from 'mongoose';
+import User from '../models/User';
 
 interface AuthRequest extends Request {
   user?: any;
@@ -14,20 +16,49 @@ interface AuthRequest extends Request {
 // @route   POST /api/bookings/room
 // @access  Private
 export const createRoomBooking = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { roomId, fromDate, toDate, numberOfGuests, specialRequests, extraBeds, requested } = req.body;
+    //Extract data from request body
+    const extraBeds = req.body.extraBeds || 0;
+    const { roomId, fromDate, toDate, numberOfGuests, specialRequests, requested } = req.body;
 
+    // Validate required fields
+    if (!roomId || !fromDate || !toDate || !numberOfGuests) {
+      res.status(400);
+      throw new Error("Missing required fields");
+    }
+
+    // Validate MongoDB ID
+    if (!mongoose.Types.ObjectId.isValid(roomId)) {
+      res.status(400);
+      throw new Error("Invalid room ID");
+    }
+    // Validate dates
     const start = new Date(fromDate);
     const end = new Date(toDate);
-
+    // Check if dates are valid
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       res.status(400);
       throw new Error("Invalid date format");
     }
-
+    // Check if end date is after start date
     if (end <= start) {
       res.status(400);
       throw new Error("End date must be after start date");
     }
+    // Standard hotel timing: 10:00 AM
+    start.setUTCHours(12,0,0,0);
+    end.setUTCHours(10,0,0,0);
+
+    // Validate number of guests
+    if (numberOfGuests <= 0) {
+      res.status(400);
+      throw new Error("Number of guests must be at least 1");
+    }
+    // Validate extra beds
+    if (extraBeds < 0) {
+      res.status(400);
+      throw new Error("Extra beds cannot be negative");
+    }
+    // Check if room exists
     const room = await Room.findById(roomId);
     if (!room) {
       res.status(404);
@@ -43,23 +74,21 @@ export const createRoomBooking = asyncHandler(async (req: AuthRequest, res: Resp
     // Validate guests <= maxGuests
     if (numberOfGuests > room.maxGuests) {
       res.status(400);
-      throw new Error(
-        `Maximum ${room.maxGuests} guests allowed for this room`
-      );
+      throw new Error(`Maximum ${room.maxGuests} guests allowed for this room`);
     }
-
+    // Validate extra beds <= maxExtraBeds
+    if (extraBeds > room.maxBeds) {
+      res.status(400);
+      throw new Error(`Maximum ${room.maxBeds} extra beds allowed`);
+    }
     // Check overlapping booking
     const overlappingBooking = await Booking.findOne({
       room: roomId,
-      status: { $ne: "Cancelled" },
-      $or: [
-        {
-          fromDate: { $lte: end },
-          toDate: { $gte: start },
-        },
-      ],
+      status: { $in: ["Pending", "Confirmed"] },
+      fromDate: { $lte: end },
+      toDate: { $gte: start },
     });
-
+    // If overlapping booking exists → NOT available
     if (overlappingBooking) {
       res.status(400);
       throw new Error("Room is already booked for the selected dates");
@@ -69,7 +98,7 @@ export const createRoomBooking = asyncHandler(async (req: AuthRequest, res: Resp
     const days = Math.ceil(
       (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
     );
-
+    // Assuming extra bed costs 50% of room price per nig
     const totalPrice = days * room.pricePerNight * extraBeds;
     const booking = await Booking.create({
       user: req.user._id,
@@ -84,7 +113,7 @@ export const createRoomBooking = asyncHandler(async (req: AuthRequest, res: Resp
       requested,
       status: "Pending",
     });
-
+    // Return booking details
     res.status(201).json(booking);
   }
 );
@@ -93,12 +122,14 @@ export const createRoomBooking = asyncHandler(async (req: AuthRequest, res: Resp
 // @route   GET /api/bookings
 // @access  Private/Admin
 export const getAllBookings = asyncHandler(async (req: Request, res: Response) => {
+  // Fetch all bookings with user, room, and banquet hall details
   const bookings = await Booking.find({})
     .populate('user', 'name email')
     .populate('room', 'name')
     .populate('banquetHall', 'name')
     .sort({ createdAt: -1 });
-  (res as any).json(bookings);
+  // Return bookings
+  res.status(200).json(bookings);
 });
 
 // @desc    Create Banquet Booking
@@ -118,7 +149,6 @@ export const createBanquetBooking = asyncHandler(async (req: AuthRequest, res: R
       throw new Error("End date must be after start date");
     }
     const hall = await BanquetHall.findById(banquetHallId);
-    console.log(hall?.supportedEvents);
     if (!hall) {
       res.status(404);
       throw new Error("Banquet Hall not found");
@@ -231,31 +261,48 @@ export const updateBookingStatus = asyncHandler(async (req: Request, res: Respon
   }
 });
 
-/**
- * @desc    Get bookings by user ID (Admin)
- * @route   GET /api/admin/bookings/user/:id
- * @access  Private/Admin
- */
-export const getBookingsByUser = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
+
+// @desc    Get bookings by user ID (Admin)
+// @route   GET /api/admin/bookings/user/:id
+// @access  Private/Admin
+export const getBookingsByUser = asyncHandler(async (req: AuthRequest, res: Response) => {
+    //get user ID from params
     const userId = req.params.id;
 
+    // 1️⃣ Check valid MongoDB ID
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      res.status(400);
+      throw new Error("Invalid User ID");
+    }
+
+    //Check if user exists
+    const user = await User.findById(userId);
+
+    if (!user) {
+      res.status(404);
+      throw new Error("User not found");
+    }
+
+    //find bookings for the user
     const bookings = await Booking.find({ user: userId })
       .populate("room")
       .populate("banquetHall")
       .sort({ createdAt: -1 });
 
-    res.json(bookings);
+    res.status(200).json(bookings);
   }
 );
+
 
 // @desc    Check Avaulaability of a room
 // @route   GET /api/bookings/check-availability
 // @access  Public
 export const checkRoomAvailability = async (req: Request, res: Response) => {
   try {
+    //get query params
     const { roomId, fromDate, toDate } = req.query;
 
+    // Validate required parameters
     if (!roomId || !fromDate || !toDate) {
       return res.status(400).json({
         available: false,
@@ -263,14 +310,48 @@ export const checkRoomAvailability = async (req: Request, res: Response) => {
       });
     }
 
+    
+    // Validate MongoDB ID
+    if (!mongoose.Types.ObjectId.isValid(roomId as string)) {
+      return res.status(400).json({
+        available: false,
+        message: "Invalid room ID"
+      });
+    }
+    
+    // Validate room existence
+    const room = await Room.findById(roomId);
+    if (!room) {
+      return res.status(404).json({
+        available: false,
+        message: "Room not found"
+      });
+    }
+    
     // Convert to Date objects
     const checkInDate = new Date(fromDate as string);
     const checkOutDate = new Date(toDate as string);
 
-    // Standard hotel timing: 10:00 AM
-    checkInDate.setHours(12, 0, 0, 0);
-    checkOutDate.setHours(10, 0, 0, 0);
+    // Validate dates
+    if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
+      return res.status(400).json({
+        available: false,
+        message: "Invalid date format"
+      });
+    }
 
+    // Check date order
+    if (checkInDate >= checkOutDate) {
+      return res.status(400).json({
+        available: false,
+        message: "Check-out must be after check-in"
+      });
+    }
+
+    // Standard hotel timing: 10:00 AM
+    checkInDate.setUTCHours(12,0,0,0);
+    checkOutDate.setUTCHours(10,0,0,0);
+    
     const existingBooking = await Booking.findOne({
       type: 'room',
       room: roomId,
@@ -288,7 +369,7 @@ export const checkRoomAvailability = async (req: Request, res: Response) => {
     return res.json({ available: true });
 
   } catch (error) {
-    console.error('Availability check error:', error);
+    // console.error('Availability check error:', error);
     return res.status(500).json({
       available: false,
       message: 'Server error'

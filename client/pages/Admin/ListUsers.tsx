@@ -128,6 +128,7 @@ const ListUsers = () => {
     const fetchUsers = async () => {
       try {
         const data = await api.getAllUsers();
+        console.log("Fetched users:", data);
         setUsers(data);
         setFilteredUsers(data);
       } catch (error) {

@@ -12,7 +12,7 @@ cloudinary.config({
   api_secret: CLOUDINARY_API_SECRET,
 });
 
-console.log(CLOUDINARY_CLOUD_NAME);
+// console.log(CLOUDINARY_CLOUD_NAME);
 // Function to create Multer storage for a specific folder
 export const storage = (folderName: string) =>
   new CloudinaryStorage({

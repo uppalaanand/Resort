@@ -62,7 +62,7 @@
 
 // /original2
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, PlusSquare, List, Users, Image, Calendar, Star } from "lucide-react";
+import { LayoutDashboard, PlusSquare, List, Users, Image, Calendar, Star, Bed, BedDouble, Building2, ClipboardList, PartyPopper } from "lucide-react";
 
 
 const Sidebar = () => {
@@ -76,23 +76,23 @@ const Sidebar = () => {
     {
       name: "List Room",
       path: "/admin/list-rooms",
-      icon: List,
+      icon: BedDouble,
     },
-    {
-      name: "Add Room",
-      path: "/admin/add-room",
-      icon: PlusSquare,
-    },
+    // {
+    //   name: "Add Room",
+    //   path: "/admin/add-room",
+    //   icon: PlusSquare,
+    // },
     {
       name: "List Banquets",
       path: "/admin/list-banquets",
-      icon: List,
+      icon: Building2,
     },
-    {
-      name: "Add Banquete",
-      path: "/admin/add-banquete",
-      icon: PlusSquare,
-    },
+    // {
+    //   name: "Add Banquete",
+    //   path: "/admin/add-banquete",
+    //   icon: PlusSquare,
+    // },
     {
       name: "List Users",
       path: "/admin/list-users",
@@ -103,11 +103,11 @@ const Sidebar = () => {
       path: "/admin/gallery",
       icon: Image,
     },
-    {
-      name: "Add Event",
-      path: "/admin/add-event",
-      icon: PlusSquare,
-    },
+    // {
+    //   name: "Add Event",
+    //   path: "/admin/add-event",
+    //   icon: PlusSquare,
+    // },
     {
       name: "List Events",
       path: "/admin/list-events",
@@ -121,12 +121,12 @@ const Sidebar = () => {
     {
       name: "Room Requests",
       path: "/admin/room-request",
-      icon: List
+      icon: ClipboardList
     },
     {
       name: "Banquete Requests",
       path: "/admin/banquete-request",
-      icon: List
+      icon: PartyPopper
     }
   ];
     
@@ -149,4 +149,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-

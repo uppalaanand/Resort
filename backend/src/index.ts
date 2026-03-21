@@ -13,9 +13,11 @@ import userRoutes from './routes/userRoutes';
 import galleryRoutes from './routes/galleryRoutes';
 import eventRoutes from './routes/eventRoutes';
 import roomRequestRoutes from './routes/roomRequestRoutes';
+import { connectRedis } from './config/redis';
 
 dotenv.config();
 connectDB();
+connectRedis();
 
 const app = express();
 
@@ -49,4 +51,4 @@ app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
 });
 
-// export default app;
+export default app;

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/utils/api";
 import { useNavigate } from "react-router-dom";
 import ConfirmToggleModal from "@/components/ConfirmToggleModal";
-import { Pencil } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 
 const ListRooms = () => {
   const [rooms, setRooms] = useState<any[]>([]);
@@ -55,10 +55,21 @@ const ListRooms = () => {
   return (
     <div>
       {/* PAGE HEADER */}
-      <h1 className="text-3xl font-bold mb-2">Rooms</h1>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div>
+      <h1 className="text-3xl font-bold mb-1">Rooms</h1>
       <p className="text-gray-500 mb-8">
         Monitor room availability and manage room details.
       </p>
+      </div>
+      <button
+          onClick={() => navigate("/admin/add-room")}
+          className="flex items-center gap-2 bg-vp-gold text-vp-dark px-5 py-2 rounded-lg font-semibold hover:opacity-90 transition"
+        >
+          <Plus size={18} />
+          Add New Room
+        </button>
+        </div>
 
       {/* ROOMS TABLE */}
       <div className="bg-white rounded-xl shadow p-6 overflow-x-auto">

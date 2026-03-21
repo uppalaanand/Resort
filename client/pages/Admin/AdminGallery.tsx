@@ -26,7 +26,7 @@ const [selectedGallery, setSelectedGallery] = useState<GalleryItem | null>(null)
   const fetchGallery = async () => {
     try {
       const data = await api.getGallery();
-      setGallery(data);
+      setGallery(data as any[]);
     } catch (err) {
       console.error("Failed to fetch gallery", err);
     } finally {

@@ -6,6 +6,8 @@ import { Room, Banquet } from '../types';
 import { Calendar, Clock, Users, Info, User, Phone, CheckCircle, Star } from 'lucide-react';
 import { getImageUrl } from '../utils/images';
 import SuccessModal from "../components/SuccessModal";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Booking = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -32,9 +34,8 @@ const Booking = () => {
     const [requested, setRequested] = useState(false);
     // const [totalPrice, setTotalPrice] = useState(0);
     const [successOpen, setSuccessOpen] = useState(false);
-
-
-
+    // const today = new Date().toISOString().split('T')[0];
+    const [bookedDates, setBookedDates] = useState([]);
 
   const EXTRA_BED_COST = 1000;
     const MAX_EXTRA_BEDS = 3; 
@@ -91,8 +92,6 @@ const Booking = () => {
         setError('End date must be after start date.');
         return;
     }
-    
-
     setIsSubmitting(true);
     try {
         const bookingData = {
@@ -124,41 +123,57 @@ const Booking = () => {
         setError(err.message || 'Booking failed');
     } finally {
         setIsSubmitting(false);
+    }};
+
+    const checkAvailability = async () => {
+        if (!fromDate || !toDate || !id || type !== 'room') return;
+
+        setCheckingAvailability(true);
+        try {
+            const res = await api.checkRoomAvailability({
+                roomId: id,
+                fromDate,
+                toDate,
+            });
+            setIsAvailable(res.available);
+
+            // 👇 if NOT available → mark as request
+            if (!res.available) {
+            setRequested(true);
+            }
+        } catch (err) {
+            setIsAvailable(false);
+            setRequested(true);
+        } finally {
+            setCheckingAvailability(false);
+        }
+    };
+
+    // ✅ Check availability whenever dates change
+    useEffect(() => {
+    if (type === 'room' && fromDate && toDate) {
+        checkAvailability();
     }
-  };
+    }, [fromDate, toDate]);
 
-  const checkAvailability = async () => {
-  if (!fromDate || !toDate || !id || type !== 'room') return;
+    // ✅ Fetch booked dates to disable in calendar
+    useEffect(() => {
+        const fetchBookedDates = async () => {
+            if (!id || !type) return;
 
-  setCheckingAvailability(true);
-  try {
-    const res = await api.checkRoomAvailability({
-      roomId: id,
-      fromDate,
-      toDate,
-    });
+            try {
+                const res = await api.getBookedDates({ id, type });
 
-    setIsAvailable(res.available);
+                // convert string → Date
+                const dates = res.map((d) => new Date(d));
+                setBookedDates(dates as any);
+            } catch (err) {
+                setError('Failed to load availability');
+            }
+        };
 
-    // 👇 if NOT available → mark as request
-    if (!res.available) {
-      setRequested(true);
-    }
-  } catch (err) {
-    setIsAvailable(false);
-    setRequested(true);
-  } finally {
-    setCheckingAvailability(false);
-  }
-};
-
-
-useEffect(() => {
-  if (type === 'room' && fromDate && toDate) {
-    checkAvailability();
-  }
-}, [fromDate, toDate]);
-
+        fetchBookedDates();
+    }, [id, type]);
 
 
   if (loading || !item) return <div className="pt-32 text-center text-vp-gold font-serif text-xl">Loading your experience...</div>;
@@ -276,34 +291,50 @@ useEffect(() => {
                         {isRoom ? 'Stay Details' : 'Event Details'}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         {/* ✅ CHECK-IN */}
                         <div className="group">
-                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2 group-focus-within:text-vp-gold transition-colors">
-                                {isRoom ? 'Check-in Date' : 'Event Date'}
+                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                            {isRoom ? 'Check-in Date' : 'Event Date'}
                             </label>
+
                             <div className="relative">
-                                <Calendar className="absolute top-3.5 left-3 text-gray-400 group-focus-within:text-vp-dark transition-colors" size={18}/>
-                                <input 
-                                    type="date" 
-                                    required
-                                    value={fromDate}
-                                    onChange={(e) => setFromDate(e.target.value)}
-                                    className="w-full bg-gray-50 border border-gray-200 pl-10 p-3 rounded-lg focus:bg-white focus:outline-none focus:border-vp-gold focus:ring-1 focus:ring-vp-gold transition-all font-medium text-gray-800"
-                                />
+                            <Calendar className="absolute top-3.5 left-3 text-gray-400" size={18} />
+
+                            <DatePicker
+                                selected={fromDate ? new Date(fromDate) : null}
+                                onChange={(date: any) => {
+                                setFromDate(date ? date.toISOString().split("T")[0] : "");
+                                setToDate(""); // reset checkout
+                                }}
+                                minDate={new Date()} // ❌ block past
+                                // excludeDates={bookedDates} // ❌ block booked
+                                excludeDates={type === "banquet" ? bookedDates : []}
+                                placeholderText="Select check-in"
+                                className="w-full bg-gray-50 border border-gray-200 pl-10 p-3 rounded-lg"
+                            />
                             </div>
                         </div>
+                        {/* ✅ CHECK-OUT */}
                         <div className="group">
-                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2 group-focus-within:text-vp-gold transition-colors">
-                                {isRoom ? 'Check-out Date' : 'Event End Date'}
+                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                            {isRoom ? 'Check-out Date' : 'Event End Date'}
                             </label>
+
                             <div className="relative">
-                                <Clock className="absolute top-3.5 left-3 text-gray-400 group-focus-within:text-vp-dark transition-colors" size={18}/>
-                                <input 
-                                    type="date" 
-                                    required
-                                    value={toDate}
-                                    onChange={(e) => setToDate(e.target.value)}
-                                    className="w-full bg-gray-50 border border-gray-200 pl-10 p-3 rounded-lg focus:bg-white focus:outline-none focus:border-vp-gold focus:ring-1 focus:ring-vp-gold transition-all font-medium text-gray-800"
-                                />
+                            <Clock className="absolute top-3.5 left-3 text-gray-400" size={18} />
+
+                            <DatePicker
+                                selected={toDate ? new Date(toDate) : null}
+                                onChange={(date: any) => {
+                                setToDate(date ? date.toISOString().split("T")[0] : "");
+                                }}
+                                minDate={fromDate ? new Date(fromDate) : new Date()} // ✅ must be after check-in
+                                // excludeDates={bookedDates} // ❌ block booked
+                                excludeDates={type === "banquet" ? bookedDates : []}
+                                disabled={!fromDate} // ✅ UX improvement
+                                placeholderText="Select check-out"
+                                className="w-full bg-gray-50 border border-gray-200 pl-10 p-3 rounded-lg"
+                            />
                             </div>
                         </div>
                     </div>

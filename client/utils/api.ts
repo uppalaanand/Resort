@@ -169,6 +169,9 @@ export const api = {
             fromDate: string;
             toDate: string;
           }) => fetchAPI<{ available: boolean }>(`/bookings/check-availability?roomId=${params.roomId}&fromDate=${params.fromDate}&toDate=${params.toDate}`),
+  getBookedDates: (params: {id: string; type: "room" | "banquet";}) => fetchAPI<string[]>(
+    `/bookings/booked-dates?type=${params.type}&id=${params.id}`
+  ),
   
   createReview: (data: any) => fetchAPI('/reviews', { method: 'POST', body: JSON.stringify(data) }),
   getReviews: (type: 'room' | 'banquet', id: string) => fetchAPI<Review[]>(`/reviews/${type}/${id}`),

@@ -5,6 +5,7 @@ import Room from '../models/Room';
 import BanquetHall from '../models/BanquetHall';
 import mongoose from 'mongoose';
 import User from '../models/User';
+import { deleteCache, getCache, setCache } from '../utils/cache';
 
 interface AuthRequest extends Request {
   user?: any;
@@ -113,6 +114,9 @@ export const createRoomBooking = asyncHandler(async (req: AuthRequest, res: Resp
       requested,
       status: "Pending",
     });
+    // Invalidate cache for booked dates
+    const cacheKey = `bookedDates:room:${roomId}`;
+    await deleteCache(cacheKey); // Invalidate cache immediately
     // Return booking details
     res.status(201).json(booking);
   }
@@ -202,6 +206,9 @@ export const createBanquetBooking = asyncHandler(async (req: AuthRequest, res: R
       // totalPrice,
       status: "Pending", // waiting for payment / admin approval
     });
+    // Invalidate cache for booked dates
+    const cacheKey = `bookedDates:banquet:${banquetHallId}`;
+    await deleteCache(cacheKey); // Invalidate cache immediately
 
     res.status(201).json(booking);
   }
@@ -241,6 +248,14 @@ export const cancelBooking = asyncHandler(async (req: AuthRequest, res: Response
 
   booking.status = 'Cancelled';
   await booking.save();
+  // Invalidate cache for booked dates if it's a room booking
+  if (booking.type === 'room') {
+    const cacheKey = `bookedDates:room:${req.params.id}`;
+    await deleteCache(cacheKey); // Invalidate cache immediately
+  }else{
+    const cacheKey = `bookedDates:banquet:${req.params.id}`;
+    await deleteCache(cacheKey); // Invalidate cache immediately
+  }
   (res as any).json({ message: 'Booking cancelled' });
 });
 
@@ -254,6 +269,14 @@ export const updateBookingStatus = asyncHandler(async (req: Request, res: Respon
   if (booking) {
     booking.status = status;
     const updatedBooking = await booking.save();
+    //invalidate cache for booked dates if it's a room booking and status is confirmed or cancelled
+    if (booking.type === 'room' && (status === 'Confirmed' || status === 'Cancelled')) {
+      const cacheKey = `bookedDates:${req.params.id}`;
+      await deleteCache(cacheKey); // Invalidate cache immediately
+    }else{
+      const cacheKey = `bookedDates:banquet:${req.params.id}`;
+      await deleteCache(cacheKey); // Invalidate cache immediately
+    }
     (res as any).json(updatedBooking);
   } else {
     (res as any).status(404);
@@ -374,5 +397,75 @@ export const checkRoomAvailability = async (req: Request, res: Response) => {
       available: false,
       message: 'Server error'
     });
+  }
+};
+
+// @desc    Get booked dates for a room or banquet hall
+// @route   GET /api/bookings/booked-dates?type=room/banquet&id=xxx
+// @access  Public
+export const getBookedDates = async (req: Request, res: Response) => {
+  try {
+    // Get query params
+    const { id, type } = req.query;
+
+    // ✅ Validate
+    if (!id || !type) {
+      return res.status(400).json({ message: "Missing id or type" });
+    }
+    // Validate MongoDB ID
+    if (!mongoose.Types.ObjectId.isValid(id as string)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+    // Validate type
+    if (type !== "room" && type !== "banquet") {
+      return res.status(400).json({ message: "Invalid type" });
+    }
+    // Validate existence
+    const cacheKey = `bookedDates:${type}:${id}`;
+
+    // ✅ 1. Check Redis Cache
+    const cached = await getCache(cacheKey);
+    if (cached) {
+      // console.log("⚡ Redis HIT");
+      return res.json(cached);
+    }
+
+    // console.log("🐢 Redis MISS → Fetching from DB");
+    // ✅ 2. Dynamic query (room / banquet)
+    const query: any = {
+      type,
+      status: { $in: ["Pending", "Confirmed"] },
+    };
+    // Add room or banquetHall to query
+    if (type === "room") {
+      query.room = id;
+    } else {
+      query.banquetHall = id;
+    }
+    // Find overlapping bookings
+    const bookings = await Booking.find(query);
+    // Extract booked dates
+    let bookedDates: string[] = [];
+    // For each booking, get all dates between fromDate and toDate
+    bookings.forEach((booking) => {
+      let current = new Date(booking.fromDate);
+      const end = new Date(booking.toDate);
+
+      while (current < end) {
+        bookedDates.push(current.toISOString().split("T")[0]);
+        current.setDate(current.getDate() + 1);
+      }
+    });
+
+    // ✅ Remove duplicates
+    bookedDates = [...new Set(bookedDates)];
+
+    // ✅ 3. Store in Redis (TTL: 1 hour)
+    await setCache(cacheKey, bookedDates, 3600);
+
+    return res.json(bookedDates);
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };

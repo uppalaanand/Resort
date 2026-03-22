@@ -1,6 +1,6 @@
 import express from 'express';
 import { protect, admin } from '../middleware/authMiddleware';
-import { createRoomBooking, getAllBookings, createBanquetBooking, getMyBookings, cancelBooking, updateBookingStatus, getBookingsByUser, checkRoomAvailability } from '../controllers/bookingController';
+import { createRoomBooking, getAllBookings, createBanquetBooking, getMyBookings, cancelBooking, updateBookingStatus, getBookingsByUser, checkRoomAvailability, getBookedDates } from '../controllers/bookingController';
 
 const router = express.Router();
 
@@ -12,4 +12,5 @@ router.route('/:id/cancel').patch(protect as any, cancelBooking as any);
 router.route('/:id/status').patch(protect as any, admin as any, updateBookingStatus as any);
 router.get("/user/:id", protect as any, admin as any, getBookingsByUser as any);
 router.get('/check-availability', checkRoomAvailability as any);
+router.get('/booked-dates', getBookedDates as any);
 export default router;

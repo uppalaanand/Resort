@@ -21,17 +21,6 @@ export const createRoom = asyncHandler(async (req: Request, res: Response) => {
   (res as any).status(201).json(newRoom);
 });
 
-//Before Caching
-// @desc    Get all rooms
-// @route   GET /api/rooms
-// @access  Public
-// export const getRooms = asyncHandler(async (req: Request, res: Response) => {
-//   const rooms = await Room.find({ isActive: true });
-//   (res as any).json(rooms);
-// });
-
-
-//After Caching with Redis
 // @desc    Get all rooms
 // @route   GET /api/rooms
 // @access  Public
@@ -53,22 +42,6 @@ export const getRooms = asyncHandler(async (req: Request, res: Response) => {
   return (res as any).json(rooms);
 });
 
-//Before Caching
-// @desc    Get room by ID
-// @route   GET /api/rooms/:id
-// @access  Public
-// export const getRoomById = asyncHandler(async (req: Request, res: Response) => {
-//   const room = await Room.findById(req.params.id);
-//   if(room) {
-//     (res as any).json(room);
-//   }else{
-//     (res as any).status(404);
-//     throw new Error('Room not found');
-//   }
-// });
-
-
-//After Caching with Redis
 // @desc    Get room by ID
 // @route   GET /api/rooms/:id
 // @access  Public

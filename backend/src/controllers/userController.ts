@@ -40,7 +40,7 @@ export const getUserProfile = asyncHandler(async (req: AuthRequest, res: Respons
 // @access  Private
 export const updateUserProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
   const user = await User.findById(req.user._id);
-
+  console.log("Updating user profile for:", req.user);
   if (user) {
     user.name = req.body.name || user.name;
     user.phone = req.body.phone || user.phone;

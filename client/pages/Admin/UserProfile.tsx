@@ -161,7 +161,7 @@ const UserProfile = () => {
 
                       <div className="text-right">
                         <span className="text-xs text-gray-400">Total</span>
-                        <div className="text-xl font-bold">${bk.totalPrice}</div>
+                        <div className="text-xl font-bold">₹{bk.totalPrice}</div>
                       </div>
                     </div>
                   );

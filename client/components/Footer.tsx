@@ -1,7 +1,10 @@
 import React from 'react';
 import { Facebook, Instagram, Twitter, MapPin, Phone, Mail } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Footer = () => {
+  const navigate = useNavigate();
+
   return (
     <footer className="bg-vp-dark text-white border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -12,6 +15,9 @@ const Footer = () => {
             <p className="text-gray-400 text-sm leading-relaxed">
               Escape to the extraordinary. Experience luxury accommodation, exquisite dining, and nature's beauty all in one place.
             </p>
+            <button className="bg-vp-gold mt-4 text-vp-dark px-4 py-2 font-bold hover:bg-yellow-500" onClick={() => navigate('/policies')}>
+                Policies
+            </button>
           </div>
 
           {/* Contact */}

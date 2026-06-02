@@ -80,7 +80,7 @@ const Rooms = () => {
                 </div>
                 <div className="flex items-center justify-between mt-auto">
                     {/* <div>
-                         <span className="block text-2xl font-bold text-vp-gold">${room.pricePerNight}</span>
+                         <span className="block text-2xl font-bold text-vp-gold">₹{room.pricePerNight}</span>
                          <span className="text-xs text-gray-400">per night</span>
                     </div> */}
                     <div>
@@ -93,24 +93,24 @@ const Rooms = () => {
 
                           {/* Original Price */}
                           <div className="text-sm text-gray-400 line-through">
-                            ${room.pricePerNight}
+                            ₹{room.pricePerNight}
                           </div>
 
                           {/* Discounted Price */}
                           <div className="text-2xl font-bold text-vp-gold">
-                            ${room.discountPrice}
+                            ₹{room.discountPrice}
                           </div>
                         </>
                       ) : (
                         <div className="text-2xl font-bold text-vp-gold">
-                          ${room.pricePerNight}
+                          ₹{room.pricePerNight}
                         </div>
                       )}
 
                       <span className="text-xs text-gray-400">per night</span>
                     </div>
 
-                    {/* <div className={`top-4 left-4 px-3 py-1 rounded-full text-xs font-bold ${room.isActive ? 'text-green-700' : 'text-red-600'}`}>
+                    {/* <div className={`top-4 left-4 px-3 py-1 rounded-full text-xs font-bold ₹{room.isActive ? 'text-green-700' : 'text-red-600'}`}>
                       {room.isActive ? "Available" : "Unavailable"}
                     </div> */}
                     <Link 

@@ -78,17 +78,6 @@ export const createReview = asyncHandler(async (req: AuthRequest, res: Response)
 });
 
 
-//Before Caching
-// @desc    Get reviews for a room
-// @route   GET /api/reviews/room/:roomId
-// @access  Public
-// export const getRoomReviews = asyncHandler(async (req: Request, res: Response) => {
-//   const reviews = await Review.find({ room: (req as any).params.roomId }).populate('user', 'name');
-//   (res as any).json(reviews);
-// });
-
-
-//After Caching
 // @desc    Get reviews for a room
 // @route   GET /api/reviews/room/:roomId
 // @access  Public
@@ -113,17 +102,6 @@ export const getRoomReviews = asyncHandler(async (req: Request, res: Response) =
 });
 
 
-//Before Caching
-// @desc    Get reviews for a banquet
-// @route   GET /api/reviews/banquet/:banquetId
-// @access  Public
-// export const getBanquetReviews = asyncHandler(async (req: Request, res: Response) => {
-//   const reviews = await Review.find({ banquetHall: (req as any).params.banquetId }).populate('user', 'name');
-//   (res as any).json(reviews);
-// });
-
-
-//After Caching
 // @desc    Get reviews for a banquet
 // @route   GET /api/reviews/banquet/:banquetId
 // @access  Public
@@ -147,22 +125,6 @@ export const getBanquetReviews = asyncHandler(async (req: Request, res: Response
   (res as any).json(reviews);
 });
 
-//Before Caching
-// @desc    Get all reviews (admin)
-// @route   GET /api/admin/reviews
-// @access  Admin
-// export const getAllReviews = asyncHandler(async (_req, res) => {
-//   const reviews = await Review.find()
-//     .populate("user", "name")
-//     .populate("room", "name")
-//     .populate("banquetHall", "name")
-//     .sort({ createdAt: -1 });
-
-//   res.json(reviews);
-// });
-
-
-//After Caching
 // @desc    Get all reviews (admin)
 // @route   GET /api/admin/reviews
 // @access  Admin

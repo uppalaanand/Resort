@@ -69,7 +69,7 @@ const Activities = () => {
                     <div>
                          {act.price > 0 ? (
                              <>
-                                <span className="block text-xl font-bold text-vp-gold">${act.price}</span>
+                                <span className="block text-xl font-bold text-vp-gold">₹{act.price}</span>
                                 <span className="text-xs text-gray-400 capitalize">{act.priceUnit.replace('_', ' ')}</span>
                              </>
                          ) : (

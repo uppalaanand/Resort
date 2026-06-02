@@ -38,20 +38,7 @@ export const createGallery = asyncHandler(async (req: Request, res: Response) =>
   }
 );
 
-//Before Caching
-// @desc    Get all galaries
-// @route   GET /api/gallery
-// @access  Public
-// export const getGallery = asyncHandler(
-//   async (_req: Request, res: Response) => {
-//     const gallery = await Gallery.find().sort({ createdAt: -1 });
-//     res.status(200).json(gallery);
-//   }
-// );
-
-
-//After Caching
-// @desc    Get all galaries
+// @desc    Get all gallery items
 // @route   GET /api/gallery
 // @access  Public
 export const getGallery = asyncHandler(async (_req: Request, res: Response) => {
@@ -62,14 +49,14 @@ export const getGallery = asyncHandler(async (_req: Request, res: Response) => {
   //if cached Data exist return it
   if(cachedGallery) {
     //return gallery
-    console.log("Serving Gallery from Redis");
+
     return (res as any).status(200).json(cachedGallery);
   }
   //if not, get data from Mongodb
   const gallery = await Gallery.find().sort({ createdAt: -1 });
   //cache the gallery for future requests
   await setCache(cacheKey, gallery, 3600);
-  console.log("Serving Gallery from MongoDB");
+
   //return res
   res.status(200).json(gallery);
   }

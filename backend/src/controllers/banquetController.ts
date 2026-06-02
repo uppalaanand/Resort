@@ -29,23 +29,7 @@ export const createBanquet = asyncHandler(async (req: Request, res: Response) =>
   (res as any).status(201).json(newBanquet);
 });
 
-//Before Caching
-// @decs   Get all banquets
-// @route   GET /api/banquets
-// @access  Public
-// export const getBanquets = asyncHandler(async (req: Request, res: Response) => {
-//     const banquets = await BanquetHall.find({ isActive: true });
-//     if(banquets) {
-//         (res as any).json(banquets);
-//     }else{
-//         (res as any).status(404);
-//         throw new Error('No banquets found');
-//     }
-// });
-
-
-//After Caching
-// @decs   Get all banquets
+// @desc    Get all banquets
 // @route   GET /api/banquets
 // @access  Public
 export const getBanquets = asyncHandler(async (req: Request, res: Response) => {
@@ -72,23 +56,6 @@ export const getBanquets = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-//Before Caching
-// @desc    Get banquet by ID
-// @route   GET /api/banquets/:id
-// @access  Public
-// export const getBanquetById = asyncHandler(async (req: Request, res: Response) => {
-//     const banquet = await BanquetHall.findById(req.params.id);
-
-//     if(banquet) {
-//         (res as any).json(banquet);
-//     }else{
-//         (res as any).status(404);
-//         throw new Error('Banquet not found');
-//     }
-// });
-
-
-//After Caching
 // @desc    Get banquet by ID
 // @route   GET /api/banquets/:id
 // @access  Public
@@ -115,26 +82,6 @@ export const getBanquetById = asyncHandler(async (req: Request, res: Response) =
     throw new Error('Banquet not found');
   }
 });
-
-// // @desc    Update a banquet
-// // @route   PUT /api/banquets/:id
-// // @access  Private/Admin
-// export const updateBanquete = asyncHandler(async (req: Request, res: Response) => {
-//     const banquet = await BanquetHall.findById(req.params.id);
-
-//     if(!banquet) {
-//         (res as any).status(404);
-//         throw new Error('Banquet not found');
-//     }
-//     Object.assign(banquet, (req as any).body);
-
-//     const files = (req as any).files as Express.Multer.File[];
-//     if (files && files.length > 0) {
-//         banquet.images = files.map((file) => file.path); // overwrite old images
-//     }
-//     const updatedBanquet = await banquet.save();
-//     (res as any).json(updatedBanquet);
-// });
 
 // @desc    Update a banquet
 // @route   PUT /api/banquets/:id

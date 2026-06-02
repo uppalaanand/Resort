@@ -47,20 +47,7 @@ export const createEvent = asyncHandler(async (req: Request, res: Response) => {
 );
 
 
-//Before Caching
-// @decs   Get all events
-// @route   GET /api/events
-// @access  Public
-// export const getEvents = asyncHandler(
-//   async (_req: Request, res: Response) => {
-//     const events = await Event.find().sort({ startDate: 1 });
-//     res.status(200).json(events);
-//   }
-// );
-
-
-//After Caching
-// @decs   Get all events
+// @desc    Get all events
 // @route   GET /api/events
 // @access  Public
 export const getEvents = asyncHandler(async (_req: Request, res: Response) => {
@@ -84,24 +71,7 @@ export const getEvents = asyncHandler(async (_req: Request, res: Response) => {
 );
 
 
-//Before Caching
-// @decs   Get event by ID
-// @route   GET /api/events/:id
-// @access  Public
-// export const getEventById = asyncHandler(
-//   async (req: Request, res: Response) => {
-//     const event = await Event.findById(req.params.id);
-//     if (!event) {
-//       res.status(404);
-//       throw new Error("Event not found");
-//     }
-//     res.status(200).json(event);
-//   }
-// );
-
-
-//After Caching
-// @decs   Get event by ID
+// @desc    Get event by ID
 // @route   GET /api/events/:id
 // @access  Public
 export const getEventById = asyncHandler(async (req: Request, res: Response) => {

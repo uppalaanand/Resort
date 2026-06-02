@@ -1,7 +1,6 @@
-const API_URL = 'https://resort-4x9p.vercel.app/api';
-// const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-const getToken = () => {
+const getToken = (): string | null => {
   const user = localStorage.getItem('vp_user');
   return user ? JSON.parse(user).token : null;
 };

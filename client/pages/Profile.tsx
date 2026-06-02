@@ -136,9 +136,15 @@ import { Booking, Room, Banquet } from "../types";
 import { Calendar, MapPin, Clock, XCircle } from "lucide-react";
 import { Link, Navigate } from "react-router-dom";
 import { getImageUrl } from "../utils/images";
+import Toast from "../components/Toast";
 
 const Profile = () => {
   const { user, logout } = useAuth();
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
+  };
 
   const [activeTab, setActiveTab] = useState<"bookings" | "settings">("bookings");
 
@@ -180,8 +186,9 @@ const Profile = () => {
         await api.cancelBooking(id);
         const updated = await api.getMyBookings();
         setBookings(updated);
+        showToast("Booking cancelled successfully", "success");
       } catch {
-        alert("Failed to cancel booking");
+        showToast("Failed to cancel booking", "error");
       }
     }
   };
@@ -192,9 +199,9 @@ const Profile = () => {
     setSaving(true);
     try {
       await api.updateProfile(formData);
-      alert("Profile updated successfully");
+      showToast("Profile updated successfully", "success");
     } catch {
-      alert("Failed to update profile");
+      showToast("Failed to update profile", "error");
     } finally {
       setSaving(false);
     }
@@ -206,10 +213,11 @@ const Profile = () => {
     setSaving(true);
     try {
       await api.updateProfile(formData);
-      alert("Password changed successfully");
-      setFormData({ currentPassword: "", newPassword: "" });
+      showToast("Password changed successfully", "success");
+      setPasswords({ currentPassword: "", newPassword: "" });
+      setFormData({ ...formData, currentPassword: "", newPassword: "" });
     } catch {
-      alert("Failed to change password");
+      showToast("Failed to change password", "error");
     } finally {
       setSaving(false);
     }
@@ -337,7 +345,7 @@ const Profile = () => {
 
                           <div className="text-right">
                             <span className="text-xs text-gray-400">Total</span>
-                            <div className="text-xl font-bold">${bk.totalPrice}</div>
+                            <div className="text-xl font-bold">₹{bk.totalPrice}</div>
                           </div>
                         </div>
                       );
@@ -396,9 +404,11 @@ const Profile = () => {
                     type="password"
                     placeholder="Current Password"
                     value={passwords.currentPassword}
-                    onChange={(e) =>
-                      setPasswords({ ...passwords, currentPassword: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPasswords({ ...passwords, currentPassword: val });
+                      setFormData({ ...formData, currentPassword: val });
+                    }}
                     className="w-full border rounded px-4 py-2"
                   />
 
@@ -406,9 +416,11 @@ const Profile = () => {
                     type="password"
                     placeholder="New Password"
                     value={passwords.newPassword}
-                    onChange={(e) =>
-                      setPasswords({ ...passwords, newPassword: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPasswords({ ...passwords, newPassword: val });
+                      setFormData({ ...formData, newPassword: val });
+                    }}
                     className="w-full border rounded px-4 py-2"
                   />
 
@@ -424,6 +436,13 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

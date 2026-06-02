@@ -134,7 +134,7 @@ const RoomDetails = () => {
             <h1 className="text-4xl md:text-5xl font-serif font-bold text-vp-dark mb-4 leading-tight">{room.name}</h1>
             
             {/* <div className="flex items-end gap-2 mb-6">
-                <span className="text-3xl font-bold text-vp-dark">${room.pricePerNight}</span>
+                <span className="text-3xl font-bold text-vp-dark">₹{room.pricePerNight}</span>
                 <span className="text-gray-500 mb-1">/ night</span>
             </div> */}
             <div>
@@ -147,17 +147,17 @@ const RoomDetails = () => {
 
                   {/* Original Price */}
                   <div className="text-sm text-gray-400 line-through">
-                    ${room.pricePerNight}
+                    ₹{room.pricePerNight}
                   </div>
 
                   {/* Discounted Price */}
                   <div className="text-2xl font-bold text-vp-gold">
-                    ${room.discountPrice}
+                    ₹{room.discountPrice}
                   </div>
                 </>
               ) : (
                 <div className="text-2xl font-bold text-vp-gold">
-                  ${room.pricePerNight}
+                  ₹{room.pricePerNight}
                 </div>
               )}
 

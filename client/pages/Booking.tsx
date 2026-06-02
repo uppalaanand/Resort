@@ -206,7 +206,7 @@ const Booking = () => {
                 <div className="space-y-4 text-sm border-t border-white/10 pt-6">
                     {/* <div className="flex justify-between items-center">
                         <span className="text-gray-400">Base Rate</span>
-                        <span className="font-mono text-lg">${isRoom ? (item as Room).pricePerNight : (item as Banquet).pricePerPlate} <span className="text-xs text-gray-500">/{isRoom ? 'night' : 'pp'}</span></span>
+                        <span className="font-mono text-lg">₹{isRoom ? (item as Room).pricePerNight : (item as Banquet).pricePerPlate} <span className="text-xs text-gray-500">/{isRoom ? 'night' : 'pp'}</span></span>
                     </div> */}
                     {isRoom && (
                         <div className="flex justify-between items-center">
@@ -245,7 +245,7 @@ const Booking = () => {
             {error && (
                 <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-8 text-sm border border-red-200 flex items-start gap-3">
                    <div className="mt-0.5"><Info size={16}/></div>
-                   <div><span className="font-bold">Error:</span> {error}</div>
+                   <div><span className="font-bold"></span> {error}</div>
                 </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-8">
@@ -454,7 +454,7 @@ const Booking = () => {
                 <div className="pt-6 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6 ">
                     {isRoom && <div className="text-center md:text-left">
                         <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Estimated Total</p>
-                        <p className="text-3xl font-serif font-bold text-vp-dark">${calculateTotal().toLocaleString()}</p>
+                        <p className="text-3xl font-serif font-bold text-vp-dark">₹{calculateTotal().toLocaleString()}</p>
                     </div>}
                     {/* <button 
                         type="submit" 

@@ -27,6 +27,7 @@ const Navbar = () => {
     { name: 'Events', path: '/events' },
     { name: 'Activities', path: '/activities' },
     { name: 'Gallery', path: '/gallery' },
+    { name: 'Contact', path: '/contact' },
   ];
 
   const isHome = location.pathname === '/';
@@ -40,53 +41,13 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           {/* Logo */}
-
-
-<Link to="/" className="flex flex-col items-center group select-none">
-
-  {/* Top: FOUR LEAF with thin line effect */}
-  <div className="relative">
-    
-    {/* Thin line above */}
-    <div className="absolute -top-2 left-0 w-8 h-[1px] bg-[#cfcfcf] opacity-80"></div>
-
-    <span className="
-      text-[#cfcfcf]
-      text-[0.6rem] md:text-[0.7rem]
-      tracking-[0.6em]
-      uppercase
-      leading-none
-      ml-1.5
-      font-light
-      transition-colors duration-300
-      group-hover:text-[#e6c36a]
-    "
-    style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      FOUR LEAF
-    </span>
-
-    {/* Thin line below */}
-    <div className="absolute -bottom-2 right-0 w-8 h-[1px] bg-[#cfcfcf] opacity-80"></div>
-  </div>
-
-  {/* Bottom: Resort text */}
-  <span className="
-    text-[#cfcfcf]
-    text-3xl md:text-4xl
-    font-extralight
-    tracking-[0.18em]
-    leading-none
-    mt-1
-    transition-all duration-300
-    group-hover:text-white
-  "
-  style={{ fontFamily: 'Montserrat, sans-serif' }}>
-    Resort
-  </span>
-
-</Link>
-
-
+          <Link to="/" className="flex items-center group select-none transition-transform duration-300 hover:scale-[1.02]">
+            <img 
+              src="/ojas-logo.png" 
+              alt="Ojas Resort Logo" 
+              className="h-12 md:h-19 w-auto object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]"
+            />
+          </Link>
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-8">
             {navLinks.map((link) => (

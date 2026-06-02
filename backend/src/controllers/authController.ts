@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
-import generateToken from '../utils/ganerateToken';
+import generateToken from '../utils/generateToken';
 import asyncHandler from 'express-async-handler';
 
 // @desc    Register a new user

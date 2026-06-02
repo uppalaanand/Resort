@@ -6,7 +6,8 @@ import {
   Clock,
   Building2,
   Eye,
-  PartyPopper
+  PartyPopper,
+  Phone
 } from 'lucide-react';
 import { api } from '@/utils/api';
 import { Booking } from '@/types';
@@ -45,7 +46,6 @@ const banquetBookings = bookings.filter(
   const activeBanqueteRequests = banquetBookings.filter(
     (booking) => new Date(booking.toDate) >= today && new Date(booking.fromDate) >= today
   );
-
 
 
   if (loading)
@@ -96,6 +96,9 @@ const banquetBookings = bookings.filter(
               <div className="text-sm text-gray-700 space-y-1">
                 <div className="flex items-center gap-2">
                   <Users size={14} /> {booking.user.name}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Phone size={14} /> {booking.user.phone}
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail size={14} /> {booking.user.email}
@@ -151,9 +154,9 @@ const banquetBookings = bookings.filter(
 
               {/* Footer */}
               <div className="flex justify-between items-center pt-4 border-t">
-                <span className="text-lg font-bold text-vp-gold">
-                  ${booking.totalPrice}
-                </span>
+                {/* <span className="text-lg font-bold text-vp-gold">
+                  ₹{booking.totalPrice}
+                </span> */}
                 <button
                       onClick={() => navigate(`/admin/users/${booking.user._id}`)}
                       className="px-3 py-1 text-xs font-semibold rounded bg-vp-dark text-white hover:opacity-90"

@@ -141,7 +141,7 @@ const Home = () => {
                   </div>
                   <div className="mt-auto flex justify-between items-center">
                     <div>
-                        <span className="text-2xl font-bold text-vp-gold">${room.pricePerNight}</span>
+                        <span className="text-2xl font-bold text-vp-gold">₹{room.pricePerNight}</span>
                         <span className="text-xs text-gray-400">/night</span>
                     </div>
                     <Link to={`/rooms/${room._id}`} className="text-vp-dark hover:text-vp-gold font-bold border-b-2 border-vp-dark hover:border-vp-gold transition-colors pb-1 uppercase text-xs tracking-widest">

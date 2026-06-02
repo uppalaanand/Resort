@@ -9,15 +9,17 @@ import RoomDetails from './pages/RoomDetails';
 import Banquets from './pages/Banquets';
 import BanquetDetails from './pages/BanquetDetails';
 import Booking from './pages/Booking';
-// import Admin from './pages/Admin';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
 import Gallery from './pages/Gallery';
 import Events from './pages/Events';
 import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import { UserRole } from './types';
 import AddRoom from './pages/Admin/AddRoom';
 import AddBanquete from './pages/Admin/AddBanquete';
 import Activities from './pages/Activities';
+import Contact from './pages/Contact';
 import AdminLayout from './pages/AdminLayout';
 import Dashboard from './pages/Admin/Dashbourd';
 import ListUsers from './pages/Admin/ListUsers';
@@ -36,6 +38,7 @@ import UserProfile from './pages/Admin/UserProfile';
 import RoomRequests from './pages/Admin/RoomRequests';
 import BanquetRequests from './pages/Admin/BanqueteRequest';
 import BookingDetails from './pages/Admin/BookingDetails';
+import PolicyPage from './pages/PolicyPage';
 
 const ScrollToTopHandler = () => {
   const { pathname } = useLocation();
@@ -66,12 +69,14 @@ const App = () => {
             <Route path="/banquets" element={<Banquets />} />
             <Route path="/banquets/:id" element={<BanquetDetails />} />
             <Route path="/events" element={<Events />} />
-            <Route path="/book/:type/:id" element={<Booking />} />
+            <Route path="/book/:type/:id" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path='/activities' element={<Activities />} />
-            <Route path="/admin" element={<AdminLayout />} >
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/policies" element={<PolicyPage />} />
+            <Route path="/admin" element={<ProtectedRoute requiredRole={UserRole.ADMIN}><AdminLayout /></ProtectedRoute>} >
               <Route index element={<Navigate to="dashboard" />} />
               <Route path='/admin/dashboard' element={<Dashboard />} />
               <Route path="/admin/add-room" element={<AddRoom />} />

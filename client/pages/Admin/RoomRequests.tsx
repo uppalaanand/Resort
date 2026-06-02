@@ -127,7 +127,7 @@ const RoomRequests = () => {
               {/* Footer */}
               <div className="flex justify-between items-center pt-4 border-t">
                 <span className="text-lg font-bold text-vp-gold">
-                  ${booking.totalPrice}
+                  ₹{booking.totalPrice}
                 </span>
                 {console.log(booking)}
 

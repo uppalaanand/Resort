@@ -125,7 +125,7 @@ const Admin = () => {
                                         <img src={getImageUrl(item.images?.[0])} className="w-16 h-16 object-cover rounded" alt={item.name} />
                                         <div>
                                             <h4 className="font-bold text-vp-dark">{item.name}</h4>
-                                            <p className="text-sm text-gray-500">${item.pricePerNight || item.pricePerPlate}</p>
+                                            <p className="text-sm text-gray-500">₹{item.pricePerNight || item.pricePerPlate}</p>
                                         </div>
                                     </div>
                                     <button onClick={() => deleteItem(item._id)} className="text-red-600 hover:bg-red-50 p-2 rounded"><Trash2 size={18}/></button>

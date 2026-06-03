@@ -49,7 +49,7 @@ app.use('/api/room-requests', roomRequestRoutes);
 
 // Default Route
 app.get('/', (req, res) => {
-  res.send('API is running...');
+  res.send('API is running... created by bugbros');
 });
 
 // Error Middleware

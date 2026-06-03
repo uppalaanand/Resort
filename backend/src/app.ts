@@ -33,8 +33,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 // Rate Limiting
-app.use('/api/', apiLimiter as any);
-app.use('/api/auth', authLimiter as any);
+//app.use('/api/', apiLimiter as any);
+//app.use('/api/auth', authLimiter as any);
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -49,7 +49,7 @@ app.use('/api/room-requests', roomRequestRoutes);
 
 // Default Route
 app.get('/', (req, res) => {
-  res.send('API is running...');
+  res.send('API is running... created by bugbros');
 });
 
 // Error Middleware

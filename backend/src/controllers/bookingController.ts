@@ -129,7 +129,7 @@ export const getAllBookings = asyncHandler(async (req: Request, res: Response) =
   // Fetch all bookings with user, room, and banquet hall details
   const bookings = await Booking.find({})
     .populate('user', 'name email phone')
-    .populate('room', 'name')
+    .populate('room', 'name discountPrice pricePerNight')
     .populate('banquetHall', 'name')
     .sort({ createdAt: -1 });
   // Return bookings

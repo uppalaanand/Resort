@@ -43,9 +43,18 @@ export const updateUserProfile = asyncHandler(async (req: AuthRequest, res: Resp
   console.log("Updating user profile for:", req.user);
   if (user) {
     user.name = req.body.name || user.name;
-    user.phone = req.body.phone || user.phone;
+    user.email = req.body.email || user.email;
+    user.phone = req.body.phone !== undefined ? req.body.phone : user.phone;
     
-    if (req.body.password) {
+    // Password update verification
+    if (req.body.currentPassword && req.body.newPassword) {
+      const isMatch = await user.matchPassword(req.body.currentPassword);
+      if (!isMatch) {
+        (res as any).status(400);
+        throw new Error('Incorrect current password');
+      }
+      user.passwordHash = req.body.newPassword;
+    } else if (req.body.password) {
       user.passwordHash = req.body.password;
     }
 
@@ -56,6 +65,8 @@ export const updateUserProfile = asyncHandler(async (req: AuthRequest, res: Resp
       name: updatedUser.name,
       email: updatedUser.email,
       role: updatedUser.role,
+      phone: updatedUser.phone,
+      profilePhoto: updatedUser.profilePhoto,
       token: req.headers.authorization?.split(' ')[1] // keep same token
     });
   } else {

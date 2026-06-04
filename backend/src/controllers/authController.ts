@@ -55,6 +55,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      phone: user.phone,
       token: generateToken(user._id),
     });
   } else {

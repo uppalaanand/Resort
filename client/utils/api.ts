@@ -107,4 +107,5 @@ export const api = {
   googleLogin: (idToken: string) => fetchAPI<any>('/auth/google-login', { method: 'POST', body: JSON.stringify({ idToken }) }),
   googleCompleteProfile: (data: { tempToken: string; phone: string }) =>
     fetchAPI<any>('/auth/google-complete-profile', { method: 'POST', body: JSON.stringify(data) }),
+  forgotPassword: (email: string) => fetchAPI<any>('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
 };

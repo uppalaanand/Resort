@@ -1,7 +1,7 @@
 
 
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../utils/api';
 import { UserRole } from '../types';
@@ -187,6 +187,13 @@ const Auth = () => {
                 value={formData.password}
                 onChange={handleChange}
               />
+              {isLogin && (
+                <div className="flex justify-end mt-1.5">
+                  <Link to="/forgot-password" className="text-xs font-semibold text-vp-gold hover:underline">
+                    Forgot Password?
+                  </Link>
+                </div>
+              )}
             </div>
 
             <button

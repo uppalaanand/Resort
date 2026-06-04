@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "firebase/auth";
 
 // Firebase web application configuration.
 // Utilizes environment variables (VITE_FIREBASE_*) with secure fallback values for mock/dev usage.
@@ -32,6 +32,14 @@ export const signInWithGoogle = async () => {
     };
   }
   return signInWithPopup(auth, googleProvider);
+};
+
+export const resetPasswordEmail = async (email: string) => {
+  if (firebaseConfig.apiKey === "mock-api-key" && import.meta.env.DEV) {
+    console.log("Simulating mock Firebase password reset email to:", email);
+    return Promise.resolve();
+  }
+  return sendPasswordResetEmail(auth, email);
 };
 
 export default app;

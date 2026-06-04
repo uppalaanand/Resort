@@ -50,18 +50,79 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
-    (res as any).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      phone: user.phone,
-      token: generateToken(user._id),
-    });
-  } else {
+      (res as any).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        profilePhoto: user.profilePhoto,
+        token: generateToken(user._id),
+      });
+      return;
+    }
+
+    // Secure fallback: If MongoDB bcrypt match fails, check if we can verify credentials with Firebase Auth.
+    // This allows local email/password users who reset their password in Firebase to log in and sync local hash automatically.
+    if (user && user.authProvider === 'local') {
+      const apiKey = process.env.VITE_FIREBASE_API_KEY || 'mock-api-key';
+      
+      // Support mock local login for development environment
+      if (apiKey === 'mock-api-key' && process.env.NODE_ENV !== 'production' && password.startsWith('mock-pass-')) {
+        user.passwordHash = password;
+        await user.save();
+        (res as any).json({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          phone: user.phone,
+          profilePhoto: user.profilePhoto,
+          token: generateToken(user._id),
+        });
+        return;
+      }
+
+      try {
+        console.log("Attempting Firebase Auth verification for:", email, "with key:", apiKey);
+        const fbResponse = await fetch(
+          `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email,
+              password,
+              returnSecureToken: true
+            })
+          }
+        );
+        if (fbResponse.ok) {
+          console.log("Firebase Auth verification succeeded for:", email);
+          user.passwordHash = password;
+          await user.save();
+          
+          (res as any).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            phone: user.phone,
+            profilePhoto: user.profilePhoto,
+            token: generateToken(user._id),
+          });
+          return;
+        } else {
+          const errData = await fbResponse.json().catch(() => ({}));
+          console.log("Firebase Auth verification failed for:", email, "Status:", fbResponse.status, "Error:", errData);
+        }
+      } catch (err) {
+        console.error("Firebase Auth login synchronization check failed:", err);
+      }
+    }
+
     (res as any).status(401);
     throw new Error('Invalid email or password');
-  }
 });
 
 // @desc    Authenticate with Firebase Google ID token
@@ -227,4 +288,63 @@ export const googleCompleteProfile = asyncHandler(async (req: Request, res: Resp
     profilePhoto: user.profilePhoto,
     token: generateToken(user._id),
   });
+});
+
+// @desc    Initiate Firebase Password Reset
+// @route   POST /api/auth/forgot-password
+// @access  Public
+export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { email } = req.body;
+  if (!email) {
+    res.status(400);
+    throw new Error('Email is required');
+  }
+
+  const user = await User.findOne({ email });
+
+  // Generic success response to avoid email enumeration
+  if (!user) {
+    res.json({
+      success: true,
+      triggerClientReset: false,
+      message: 'If an account exists for this email, a password reset link has been sent.'
+    });
+    return;
+  }
+
+  if (user.authProvider === 'google') {
+    res.json({
+      success: false,
+      isGoogleUser: true,
+      message: 'This account uses Google Sign-In. Please continue with Google to access your account.'
+    });
+    return;
+  }
+
+  const admin = await import('../utils/firebaseAdmin');
+  try {
+    try {
+      await admin.default.auth().getUserByEmail(email);
+    } catch (fbErr: any) {
+      if (fbErr.code === 'auth/user-not-found') {
+        const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+        await admin.default.auth().createUser({
+          email,
+          displayName: user.name,
+          password: randomPassword
+        });
+      } else {
+        throw fbErr;
+      }
+    }
+
+    res.json({
+      success: true,
+      triggerClientReset: true,
+      message: 'If an account exists for this email, a password reset link has been sent.'
+    });
+  } catch (err: any) {
+    res.status(500);
+    throw new Error('Failed to verify or register account for reset: ' + err.message);
+  }
 });

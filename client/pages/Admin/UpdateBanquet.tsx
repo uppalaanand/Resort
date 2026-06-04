@@ -57,12 +57,12 @@ const UpdateBanquet = () => {
         const banquet = await api.getBanquet(banquetId);
 
         setBanquetData({
-          name: banquet.name,
-          description: banquet.description,
-          capacity: banquet.capacity,
-          pricePerPlate: banquet.pricePerPlate,
-          averageRating: banquet.averageRating,
-          reviewCount: banquet.reviewCount,
+          name: banquet.name || "",
+          description: banquet.description || "",
+          capacity: banquet.capacity || "",
+          pricePerPlate: banquet.pricePerPlate || "",
+          averageRating: banquet.averageRating || "",
+          reviewCount: banquet.reviewCount || "",
         });
 
         setAmenities(banquet.amenities || []);
@@ -147,24 +147,18 @@ const UpdateBanquet = () => {
         formData.append(key, value as string);
       });
 
-    //   formData.append("amenities", amenities.join(", "));
-    //   formData.append("supportedEvents", supportedEvents.join(", "));
-    amenities.forEach((item) => { 
+      amenities.forEach((item) => {
         formData.append("amenities", item);
-    });
+      });
 
-    supportedEvents.forEach((event) => {
+      supportedEvents.forEach((event) => {
         formData.append("supportedEvents", event);
-    });
-
+      });
 
       images.forEach((img) => formData.append("images", img));
 
       await api.updateBanquet(banquetId, formData);
-
       setSuccessOpen(true);
-    //   alert("Banquet updated successfully!");
-    //   navigate("/admin/dashboard");
     } catch (err) {
       console.error(err);
       alert("Failed to update banquet");
@@ -173,165 +167,155 @@ const UpdateBanquet = () => {
     }
   };
 
-  const handleDeleteRoom = async () => {
+  const handleDeleteBanquete = async () => {
     try {
-      await api.deleteBanquete(banquetId); // DELETE /api/rooms/:id
+      await api.deleteBanquete(banquetId);
       setDeleteOpen(false);
       navigate("/admin/dashboard");
     } catch (error) {
       console.error(error);
-      alert("Failed to delete room");
+      alert("Failed to delete banquet");
     }
-    };
+  };
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="px-4 max-w-5xl">
-      <h1 className="text-3xl font-semibold mb-2">Update Banquet</h1>
-      <p className="text-gray-500 mb-8">
-        Update banquet details, pricing, capacity, supported events, and
-        amenities carefully.
+    <div className="p-6 max-w-5xl animate-admin-fadeIn">
+      <h1 className="text-2xl font-bold text-admin-heading mb-1.5">Update Banquet</h1>
+      <p className="text-admin-text text-sm mb-8">
+        Update banquet details, pricing, capacity, supported events, and amenities carefully.
       </p>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="bg-admin-card rounded-xl border border-admin-border/50 p-6 md:p-8 space-y-6">
         {/* IMAGES */}
-        <div className="mb-8">
-          <label className="block font-medium mb-2">Images</label>
-          <div className="flex gap-4 items-center mb-4 flex-wrap">
-            {/* {existingImages.map((img, i) => (
-              <img
-                key={i}
-                src={getImageUrl(img)}
-                className="w-20 h-16 object-cover rounded border"
-              />
-            ))} */}
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-1.5">Banquet Images</label>
+          <div className="flex flex-wrap gap-4 items-center">
             {existingImages.map((img, i) => (
-              <div key={i} className="relative">
+              <div key={i} className="relative group">
                 <img
                   src={getImageUrl(img)}
-                  className="w-20 h-16 object-cover rounded border"
+                  className="w-24 h-20 object-cover rounded-lg border border-admin-border"
                 />
                 <button
                   type="button"
                   onClick={() => removeExistingImage(img)}
-                  className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-red-600 shadow-md transition-colors"
                 >
                   ✕
                 </button>
               </div>
             ))}
-            {/* {images.map((img, i) => (
-              <img
-                key={i + existingImages.length}
-                src={getImageUrl(img)}
-                className="w-20 h-16 object-cover rounded border"
-              />
-            ))} */}
             {images.map((img, i) => (
-              <div key={i} className="relative">
+              <div key={i} className="relative group">
                 <img
                   src={URL.createObjectURL(img)}
-                  className="w-20 h-16 object-cover rounded border"
+                  className="w-24 h-20 object-cover rounded-lg border border-admin-border"
                 />
                 <button
                   type="button"
                   onClick={() => removeNewImage(i)}
-                  className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-red-600 shadow-md transition-colors"
                 >
                   ✕
                 </button>
               </div>
             ))}
-            <label className="w-20 h-16 border border-dashed flex items-center justify-center cursor-pointer">
-              +
+            <label className="w-24 h-20 border-2 border-dashed border-admin-border hover:border-vp-gold/60 rounded-xl bg-admin-surface/50 transition-colors cursor-pointer flex flex-col items-center justify-center text-admin-text hover:text-vp-gold">
+              <span className="text-xl font-light">+</span>
+              <span className="text-[10px] uppercase tracking-wider font-semibold">Upload</span>
               <input type="file" multiple hidden onChange={handleImageUpload} />
             </label>
           </div>
         </div>
 
         {/* NAME + PRICE */}
-        <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm mb-1">Banquet Name</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Banquet Name</label>
             <input
               type="text"
               value={banquetData.name}
               disabled
-              className="w-full border px-3 py-2 rounded bg-gray-50"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 opacity-60 cursor-not-allowed"
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Price / Plate</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Price / Plate ($)</label>
             <input
               type="number"
               name="pricePerPlate"
               value={banquetData.pricePerPlate}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
+              required
             />
           </div>
         </div>
 
         {/* DESCRIPTION */}
-        <div className="mb-6">
-          <label className="block text-sm mb-1">Description</label>
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-1.5">Description</label>
           <textarea
             name="description"
-            rows={3}
+            rows={4}
             value={banquetData.description}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors resize-none"
+            required
           />
         </div>
 
         {/* SUPPORTED EVENTS */}
-        <div className="mb-8">
-          <label className="block font-medium mb-2">Supported Events</label>
-
-          <div className="space-y-2 mb-4">
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-2">Supported Events</label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-4">
             {predefinedEvents.map((event) => (
-              <label key={event} className="flex items-center gap-2 text-sm">
+              <label key={event} className="flex items-center gap-2 text-sm text-admin-text cursor-pointer hover:text-admin-heading select-none">
                 <input
                   type="checkbox"
                   checked={supportedEvents.includes(event)}
                   onChange={() => toggleEvent(event)}
+                  className="rounded border-admin-border text-vp-gold focus:ring-vp-gold/40 accent-vp-gold bg-admin-surface"
                 />
                 {event}
               </label>
             ))}
           </div>
 
-          {/* SELECTED EVENTS */}
-          <div className="flex flex-wrap gap-2 mb-3">
+          {/* SELECTED EVENTS CHIPS */}
+          <div className="flex flex-wrap gap-2 mb-4">
             {supportedEvents.map((event) => (
               <div
                 key={event}
-                className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                className="flex items-center gap-1.5 bg-vp-gold/10 text-vp-gold rounded-full px-3 py-1 text-xs font-medium border border-vp-gold/20"
               >
                 <span>{event}</span>
                 <button
                   type="button"
                   onClick={() => removeEvent(event)}
-                  className="text-red-500 font-bold"
+                  className="text-red-400 hover:text-red-500 font-bold ml-1"
                 >
                   ✕
                 </button>
               </div>
             ))}
           </div>
+
+          {/* CUSTOM EVENT INPUT */}
           <div className="flex gap-2 max-w-sm">
             <input
               type="text"
               placeholder="Add custom event"
               value={customEvent}
               onChange={(e) => setCustomEvent(e.target.value)}
-              className="border px-3 py-2 rounded w-full"
+              className="bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-3 py-2 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors w-full text-sm"
             />
             <button
               type="button"
               onClick={addCustomEvent}
-              className="bg-blue-600 text-white px-4 rounded"
+              className="bg-vp-gold text-vp-dark font-semibold hover:bg-amber-400 rounded-lg px-4 text-sm transition-all shadow-md shadow-vp-gold/10"
             >
               Add
             </button>
@@ -339,114 +323,126 @@ const UpdateBanquet = () => {
         </div>
 
         {/* AMENITIES */}
-        <div className="mb-8">
-          <label className="block font-medium mb-2">Amenities</label>
-
-          <div className="space-y-2 mb-4">
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-2">Amenities</label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
             {predefinedAmenities.map((item) => (
-              <label key={item} className="flex items-center gap-2 text-sm">
+              <label key={item} className="flex items-center gap-2 text-sm text-admin-text cursor-pointer hover:text-admin-heading select-none">
                 <input
                   type="checkbox"
                   checked={amenities.includes(item)}
                   onChange={() => toggleAmenity(item)}
+                  className="rounded border-admin-border text-vp-gold focus:ring-vp-gold/40 accent-vp-gold bg-admin-surface"
                 />
                 {item}
               </label>
             ))}
           </div>
 
-          {/* SELECTED AMENITIES */}
-          <div className="flex flex-wrap gap-2 mb-3">
+          {/* SELECTED AMENITIES CHIPS */}
+          <div className="flex flex-wrap gap-2 mb-4">
             {amenities.map((item) => (
               <div
                 key={item}
-                className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                className="flex items-center gap-1.5 bg-vp-gold/10 text-vp-gold rounded-full px-3 py-1 text-xs font-medium border border-vp-gold/20"
               >
                 <span>{item}</span>
                 <button
                   type="button"
                   onClick={() => removeAmenity(item)}
-                  className="text-red-500 font-bold"
+                  className="text-red-400 hover:text-red-500 font-bold ml-1"
                 >
                   ✕
                 </button>
               </div>
             ))}
           </div>
+
+          {/* CUSTOM AMENITY INPUT */}
           <div className="flex gap-2 max-w-sm">
             <input
               type="text"
               placeholder="Add custom amenity"
               value={customAmenity}
               onChange={(e) => setCustomAmenity(e.target.value)}
-              className="border px-3 py-2 rounded w-full"
+              className="bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-3 py-2 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors w-full text-sm"
             />
             <button
               type="button"
               onClick={addCustomAmenity}
-              className="bg-blue-600 text-white px-4 rounded"
+              className="bg-vp-gold text-vp-dark font-semibold hover:bg-amber-400 rounded-lg px-4 text-sm transition-all shadow-md shadow-vp-gold/10"
             >
               Add
             </button>
           </div>
         </div>
 
-        {/* META */}
-        <div className="grid grid-cols-2 gap-6 mb-10">
+        {/* META GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm mb-1">Capacity</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Capacity</label>
             <input
               type="number"
               name="capacity"
               value={banquetData.capacity}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
+              required
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Average Rating</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Average Rating</label>
             <input
               type="number"
               step="0.1"
               name="averageRating"
               value={banquetData.averageRating}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
+              required
             />
           </div>
         </div>
-        <div className="flex gap-4 mt-8">
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-600 text-white px-6 py-2 rounded"
-        >
-          {loading ? "Updating..." : "Update Banquet"}
-        </button>
-        <button type="button"
-          onClick={() => setDeleteOpen(true)}
-          className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
-        > Delete Banquete
-        </button>
+
+        {/* ACTIONS */}
+        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-admin-border/30">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-vp-gold text-vp-dark font-bold hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg px-6 py-3 transition-all shadow-lg shadow-vp-gold/20 flex-1 sm:flex-none text-center"
+          >
+            {loading ? "Updating..." : "Update Banquet"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setDeleteOpen(true)}
+            className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 rounded-lg px-6 py-3 transition-all font-semibold"
+          >
+            Delete Banquet
+          </button>
         </div>
       </form>
 
-
-      <SuccessModal open={successOpen}
+      {/* SUCCESS MODAL */}
+      <SuccessModal
+        open={successOpen}
         title="Banquet Updated Successfully 🎉"
         description={`"${banquetData.name}" has been updated and changes are now live.`}
         onClose={() => {
-            setSuccessOpen(false);
-            navigate("/admin/dashboard");
-        }}/>
+          setSuccessOpen(false);
+          navigate("/admin/dashboard");
+        }}
+      />
 
-        <ConfirmDeleteModal open={deleteOpen} 
-            title="Delete Banqute"
-            description={`Are you sure you want to delete "${banquetData.name}"? This action cannot be undone.`}
-            onConfirm={handleDeleteRoom}
-            onCancel={() => setDeleteOpen(false)}
-        />
+      {/* DELETE MODAL */}
+      <ConfirmDeleteModal
+        open={deleteOpen}
+        title="Delete Banquet"
+        description={`Are you sure you want to delete "${banquetData.name}"? This action cannot be undone.`}
+        onConfirm={handleDeleteBanquete}
+        onCancel={() => setDeleteOpen(false)}
+      />
     </div>
   );
 };

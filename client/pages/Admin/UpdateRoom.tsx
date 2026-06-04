@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { admin } from "@/utils/admin";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "@/utils/api";
 import { getImageUrl } from "@/utils/images";
 import SuccessModal from "@/components/SuccessModal";
 import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
-
 
 const UpdateRoom = () => {
   const navigate = useNavigate();
@@ -13,7 +11,6 @@ const UpdateRoom = () => {
   const [successOpen, setSuccessOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  
   const [roomData, setRoomData] = useState({
     name: "",
     description: "",
@@ -46,17 +43,17 @@ const UpdateRoom = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const room = await api.getRoom(roomId); // Implement this API in your admin utils
+        const room = await api.getRoom(roomId);
         setRoomData({
-          name: room.name,
-          description: room.description,
-          pricePerNight: room.pricePerNight,
-          maxGuests: room.maxGuests,
-          roomSize: room.roomSize,
-          averageRating: room.averageRating,
-          reviewCount: room.reviewCount,
-          maxBeds: room.maxBeds,
-          discountPrice: room.discountPrice
+          name: room.name || "",
+          description: room.description || "",
+          pricePerNight: room.pricePerNight || "",
+          maxGuests: room.maxGuests || "",
+          roomSize: room.roomSize || "",
+          averageRating: room.averageRating || "",
+          reviewCount: room.reviewCount || "",
+          maxBeds: room.maxBeds || "",
+          discountPrice: room.discountPrice || ""
         });
         setAmenities(room.amenities || []);
         setExistingImages(room.images || []);
@@ -80,13 +77,12 @@ const UpdateRoom = () => {
   };
 
   const removeExistingImage = (img: string) => {
-  setExistingImages((prev) => prev.filter((i) => i !== img));
-};
+    setExistingImages((prev) => prev.filter((i) => i !== img));
+  };
 
-const removeNewImage = (index: number) => {
-  setImages((prev) => prev.filter((_, i) => i !== index));
-};
-
+  const removeNewImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const toggleAmenity = (amenity: string) => {
     setAmenities((prev) =>
@@ -107,7 +103,6 @@ const removeNewImage = (index: number) => {
     setAmenities((prev) => prev.filter((a) => a !== amenity));
   };
 
-
   /* ------------------ SUBMIT ------------------ */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,19 +115,14 @@ const removeNewImage = (index: number) => {
         formData.append(key, value as string);
       });
 
-      // formData.append("amenities", amenities.join(", "));
-      /* ✅ SEND MULTIPLE AMENITIES */
       amenities.forEach((a) => {
         formData.append("amenities", a);
       });
 
       images.forEach((img) => formData.append("images", img));
 
-      await api.updateRoom(roomId, formData); // Implement update API in your admin utils
-
+      await api.updateRoom(roomId, formData);
       setSuccessOpen(true);
-      // alert("Room updated successfully!");
-      // navigate("/admin/dashboard");
     } catch (err) {
       console.error(err);
       alert("Failed to update room");
@@ -142,245 +132,249 @@ const removeNewImage = (index: number) => {
   };
 
   const handleDeleteRoom = async () => {
-  try {
-    await api.deleteRoom(roomId); // DELETE /api/rooms/:id
-    setDeleteOpen(false);
-    navigate("/admin/dashboard");
-  } catch (error) {
-    console.error(error);
-    alert("Failed to delete room");
-  }
+    try {
+      await api.deleteRoom(roomId);
+      setDeleteOpen(false);
+      navigate("/admin/dashboard");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete room");
+    }
   };
 
   /* ------------------ UI ------------------ */
   return (
-    <div className="px-4 max-w-5xl">
-      <h1 className="text-3xl font-semibold mb-2">Update Room</h1>
-      <p className="text-gray-500 mb-8">
+    <div className="p-6 max-w-5xl animate-admin-fadeIn">
+      <h1 className="text-2xl font-bold text-admin-heading mb-1.5">Update Room</h1>
+      <p className="text-admin-text text-sm mb-8">
         Update room details, pricing, amenities, and images carefully to maintain an accurate booking experience.
       </p>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="bg-admin-card rounded-xl border border-admin-border/50 p-6 md:p-8 space-y-6">
         {/* IMAGES */}
-        <div className="mb-8">
-          <label className="block font-medium mb-2">Images</label>
-          <div className="flex gap-4 items-center mb-4">
-            {/* {existingImages.map((img, i) => (
-              <img
-                key={i}
-                src={getImageUrl(img)}
-                className="w-20 h-16 object-cover rounded border"
-              />
-            ))} */}
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-1.5">Room Images</label>
+          <div className="flex flex-wrap gap-4 items-center">
             {existingImages.map((img, i) => (
-              <div key={i} className="relative">
+              <div key={i} className="relative group">
                 <img
                   src={getImageUrl(img)}
-                  className="w-20 h-16 object-cover rounded border"
+                  className="w-24 h-20 object-cover rounded-lg border border-admin-border"
                 />
                 <button
                   type="button"
                   onClick={() => removeExistingImage(img)}
-                  className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-red-600 shadow-md transition-colors"
                 >
                   ✕
                 </button>
               </div>
             ))}
-            {/* {images.map((img, i) => (
-              <img
-                key={i + existingImages.length}
-                src={URL.createObjectURL(img)}
-                className="w-20 h-16 object-cover rounded border"
-              />
-            ))} */}
             {images.map((img, i) => (
-              <div key={i} className="relative">
+              <div key={i} className="relative group">
                 <img
                   src={URL.createObjectURL(img)}
-                  className="w-20 h-16 object-cover rounded border"
+                  className="w-24 h-20 object-cover rounded-lg border border-admin-border"
                 />
                 <button
                   type="button"
                   onClick={() => removeNewImage(i)}
-                  className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-red-600 shadow-md transition-colors"
                 >
                   ✕
                 </button>
               </div>
             ))}
-            <label className="w-20 h-16 border border-dashed flex items-center justify-center cursor-pointer">
-              +
+            <label className="w-24 h-20 border-2 border-dashed border-admin-border hover:border-vp-gold/60 rounded-xl bg-admin-surface/50 transition-colors cursor-pointer flex flex-col items-center justify-center text-admin-text hover:text-vp-gold">
+              <span className="text-xl font-light">+</span>
+              <span className="text-[10px] uppercase tracking-wider font-semibold">Upload</span>
               <input type="file" multiple hidden onChange={handleImageUpload} />
             </label>
           </div>
         </div>
 
         {/* ROOM TYPE + PRICE */}
-        <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm mb-1">Room Type</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Room Type</label>
             <input
               type="text"
+              name="name"
               value={roomData.name}
-              className="w-full border px-3 py-2 rounded"
+              onChange={handleChange}
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
+              required
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Price / night</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Price / night ($)</label>
             <input
               type="number"
               name="pricePerNight"
               value={roomData.pricePerNight}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
+              required
             />
           </div>
         </div>
 
         {/* DESCRIPTION */}
-        <div className="mb-6">
-          <label className="block text-sm mb-1">Description</label>
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-1.5">Description</label>
           <textarea
             name="description"
-            rows={3}
+            rows={4}
             value={roomData.description}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors resize-none"
+            required
           />
         </div>
 
         {/* AMENITIES */}
-        <div className="mb-8">
-          <label className="block font-medium mb-2">Amenities</label>
-
-          <div className="space-y-2 mb-4">
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-2">Amenities</label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
             {predefinedAmenities.map((item) => (
-              <label key={item} className="flex items-center gap-2 text-sm">
+              <label key={item} className="flex items-center gap-2 text-sm text-admin-text cursor-pointer hover:text-admin-heading select-none">
                 <input
                   type="checkbox"
                   checked={amenities.includes(item)}
                   onChange={() => toggleAmenity(item)}
+                  className="rounded border-admin-border text-vp-gold focus:ring-vp-gold/40 accent-vp-gold bg-admin-surface"
                 />
                 {item}
               </label>
             ))}
           </div>
 
-          {/* SELECTED AMENITIES */}
-          <div className="flex flex-wrap gap-2 mb-3">
+          {/* SELECTED AMENITIES CHIPS */}
+          <div className="flex flex-wrap gap-2 mb-4">
             {amenities.map((item) => (
               <div
                 key={item}
-                className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                className="flex items-center gap-1.5 bg-vp-gold/10 text-vp-gold rounded-full px-3 py-1 text-xs font-medium border border-vp-gold/20"
               >
                 <span>{item}</span>
                 <button
                   type="button"
                   onClick={() => removeAmenity(item)}
-                  className="text-red-500 font-bold"
+                  className="text-red-400 hover:text-red-500 font-bold ml-1"
                 >
                   ✕
                 </button>
               </div>
             ))}
           </div>
+
+          {/* CUSTOM AMENITY INPUT */}
           <div className="flex gap-2 max-w-sm">
             <input
               type="text"
               placeholder="Add custom amenity"
               value={customAmenity}
               onChange={(e) => setCustomAmenity(e.target.value)}
-              className="border px-3 py-2 rounded w-full"
+              className="bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-3 py-2 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors w-full text-sm"
             />
             <button
               type="button"
               onClick={addCustomAmenity}
-              className="bg-blue-600 text-white px-4 rounded"
+              className="bg-vp-gold text-vp-dark font-semibold hover:bg-amber-400 rounded-lg px-4 text-sm transition-all shadow-md shadow-vp-gold/10"
             >
               Add
             </button>
           </div>
         </div>
 
-        {/* META */}
-        <div className="grid grid-cols-2 gap-6 mb-10">
+        {/* DETAILS GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
-            <label className="block text-sm mb-1">Max Guests</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Max Guests</label>
             <input
               type="number"
               name="maxGuests"
               value={roomData.maxGuests}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
+              required
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Room Size</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Room Size</label>
             <input
               type="text"
               name="roomSize"
               value={roomData.roomSize}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
+              required
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Max Beds</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Max Beds</label>
             <input
-              type="text"
+              type="number"
               name="maxBeds"
               value={roomData.maxBeds}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
+              required
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Discont Price</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Discount Price ($)</label>
             <input
-              type="text"
+              type="number"
               name="discountPrice"
               value={roomData.discountPrice}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
             />
           </div>
         </div>
-        <div className="flex gap-4 mt-8">
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-600 text-white px-6 py-2 rounded"
-        >
-          {loading ? "Updating..." : "Update Room"}
-        </button>
-        <button type="button"
-          onClick={() => setDeleteOpen(true)}
-          className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
-        > Delete Room
-        </button>
+
+        {/* ACTIONS */}
+        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-admin-border/30">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-vp-gold text-vp-dark font-bold hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg px-6 py-3 transition-all shadow-lg shadow-vp-gold/20 flex-1 sm:flex-none text-center"
+          >
+            {loading ? "Updating..." : "Update Room"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setDeleteOpen(true)}
+            className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 rounded-lg px-6 py-3 transition-all font-semibold"
+          >
+            Delete Room
+          </button>
         </div>
       </form>
 
-
-      <SuccessModal open={successOpen}
+      {/* SUCCESS MODAL */}
+      <SuccessModal
+        open={successOpen}
         title="Room Updated Successfully 🎉"
         description={`"${roomData.name}" has been updated and changes are now live.`}
         onClose={() => {
-        setSuccessOpen(false);
-        navigate("/admin/dashboard");
-      }}/>
+          setSuccessOpen(false);
+          navigate("/admin/dashboard");
+        }}
+      />
 
-      <ConfirmDeleteModal open={deleteOpen} 
+      {/* DELETE MODAL */}
+      <ConfirmDeleteModal
+        open={deleteOpen}
         title="Delete Room"
         description={`Are you sure you want to delete "${roomData.name}"? This action cannot be undone.`}
         onConfirm={handleDeleteRoom}
         onCancel={() => setDeleteOpen(false)}
       />
-
     </div>
   );
 };

@@ -1,239 +1,3 @@
-//original
-// import React, { useState } from "react";
-// import { admin } from "@/utils/admin";
-// import { useAuth } from "../../context/AuthContext";
-// import { useNavigate } from "react-router-dom";
-
-// const AddRoom = () => {
-//   const navigate = useNavigate();
-//   const { user } = useAuth();
-
-//   const [roomData, setRoomData] = useState({
-//     name: "",
-//     description: "",
-//     pricePerNight: "",
-//     maxGuests: "",
-//     roomSize: "",
-//     amenities: "",
-//     averageRating: "",
-//     reviewCount: "",
-//   });
-
-//   const [images, setImages] = useState<File[]>([]);
-//   const [loading, setLoading] = useState(false);
-
-//   const handleChange = (e: any) => {
-//     setRoomData({ ...roomData, [e.target.name]: e.target.value });
-//   };
-
-//   const handleImageUpload = (e: any) => {
-//     setImages([...e.target.files]);
-//   };
-
-//   const validateForm = () => {
-//     if (!roomData.name.trim()) return false;
-//     if (!roomData.description.trim()) return false;
-//     if (!roomData.pricePerNight || Number(roomData.pricePerNight) <= 0) return false;
-//     if (!roomData.maxGuests || Number(roomData.maxGuests) <= 0) return false;
-//     if (!roomData.roomSize.trim()) return false;
-//     if (!roomData.amenities.trim()) return false;
-//     if (!roomData.averageRating || Number(roomData.averageRating) < 0) return false;
-//     if (!roomData.reviewCount || Number(roomData.reviewCount) < 0) return false;
-//     if (images.length === 0) return false;
-
-//     return true;
-//   };
-
-//   const handleSubmit = async (e: any) => {
-//     e.preventDefault();
-
-//     if (!validateForm()) {
-//       alert("Please fill all fields correctly!");
-//       return;
-//     }
-
-//     setLoading(true);
-
-//     try {
-//       const formData = new FormData();
-
-//       formData.append("name", roomData.name);
-//       formData.append("description", roomData.description);
-//       formData.append("pricePerNight", roomData.pricePerNight);
-//       formData.append("maxGuests", roomData.maxGuests);
-//       formData.append("roomSize", roomData.roomSize);
-//       formData.append("amenities", roomData.amenities); // comma separated string
-//       formData.append("averageRating", roomData.averageRating);
-//       formData.append("reviewCount", roomData.reviewCount);
-
-//       images.forEach((img) => {
-//         formData.append("images", img);
-//       });
-
-//       await admin.uploadRoom(formData);
-
-//       alert("Room Created Successfully!");
-//       navigate("/admin");
-//     } catch (error) {
-//       console.error(error);
-//       alert("Failed to create room");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="pt-24 pb-12 max-w-4xl mx-auto px-4">
-//       <h1 className="text-3xl font-bold mb-8 text-vp-dark">Add New Room</h1>
-
-//       <form
-//         onSubmit={handleSubmit}
-//         className="bg-white shadow-2xl p-8 rounded-2xl space-y-8 border border-gray-200"
-//       >
-//         {/* BASIC INFO */}
-//         <div>
-//           <h2 className="text-xl font-bold text-vp-dark mb-4">Basic Information</h2>
-
-//           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//             <div>
-//               <label className="block text-sm font-semibold mb-1">Room Name</label>
-//               <input
-//                 type="text"
-//                 name="name"
-//                 required
-//                 className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-vp-gold"
-//                 value={roomData.name}
-//                 onChange={handleChange}
-//               />
-//             </div>
-
-//             <div>
-//               <label className="block text-sm font-semibold mb-1">Price / Night (₹)</label>
-//               <input
-//                 type="number"
-//                 name="pricePerNight"
-//                 required
-//                 className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-vp-gold"
-//                 value={roomData.pricePerNight}
-//                 onChange={handleChange}
-//                 min="1"
-//               />
-//             </div>
-
-//             <div>
-//               <label className="block text-sm font-semibold mb-1">Max Guests</label>
-//               <input
-//                 type="number"
-//                 name="maxGuests"
-//                 required
-//                 className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-vp-gold"
-//                 value={roomData.maxGuests}
-//                 onChange={handleChange}
-//                 min="1"
-//               />
-//             </div>
-
-//             <div>
-//               <label className="block text-sm font-semibold mb-1">Room Size</label>
-//               <input
-//                 type="text"
-//                 name="roomSize"
-//                 placeholder="e.g., 550 sq ft"
-//                 required
-//                 className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-vp-gold"
-//                 value={roomData.roomSize}
-//                 onChange={handleChange}
-//               />
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* DESCRIPTION */}
-//         <div>
-//           <label className="block text-sm font-semibold mb-1">Description</label>
-//           <textarea
-//             name="description"
-//             required
-//             className="w-full border px-4 py-3 rounded-lg focus:ring-2 focus:ring-vp-gold"
-//             rows={3}
-//             value={roomData.description}
-//             onChange={handleChange}
-//           ></textarea>
-//         </div>
-
-//         {/* AMENITIES */}
-//         <div>
-//           <label className="block text-sm font-semibold mb-1">Amenities</label>
-//           <input
-//             type="text"
-//             name="amenities"
-//             placeholder="WiFi, AC, Breakfast, Jacuzzi"
-//             required
-//             className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-vp-gold"
-//             value={roomData.amenities}
-//             onChange={handleChange}
-//           />
-//         </div>
-
-//         {/* RATING SECTION */}
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//           <div>
-//             <label className="block text-sm font-semibold mb-1">Average Rating</label>
-//             <input
-//               type="number"
-//               name="averageRating"
-//               step="0.1"
-//               min="0"
-//               max="5"
-//               required
-//               className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-vp-gold"
-//               value={roomData.averageRating}
-//               onChange={handleChange}
-//             />
-//           </div>
-
-//           <div>
-//             <label className="block text-sm font-semibold mb-1">Review Count</label>
-//             <input
-//               type="number"
-//               name="reviewCount"
-//               min="0"
-//               required
-//               className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-vp-gold"
-//               value={roomData.reviewCount}
-//               onChange={handleChange}
-//             />
-//           </div>
-//         </div>
-
-//         {/* IMAGE UPLOAD */}
-//         <div>
-//           <label className="block text-sm font-semibold mb-1">Upload Images</label>
-//           <input
-//             type="file"
-//             multiple
-//             accept="image/*"
-//             onChange={handleImageUpload}
-//             className="w-full border border-gray-300 px-3 py-2 rounded-lg bg-gray-50"
-//           />
-//         </div>
-
-//         {/* SUBMIT BUTTON */}
-//         <button
-//           type="submit"
-//           disabled={loading}
-//           className="bg-vp-dark text-white px-8 py-3 w-full rounded-xl font-bold uppercase tracking-wide hover:bg-black transition"
-//         >
-//           {loading ? "Creating..." : "Create Room"}
-//         </button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default AddRoom;
-
-
 import React, { useState } from "react";
 import { admin } from "@/utils/admin";
 import { useNavigate } from "react-router-dom";
@@ -361,93 +125,92 @@ const AddRoom = () => {
 
   /* ------------------ UI ------------------ */
   return (
-    <div className="px-4 max-w-5xl">
-      <h1 className="text-3xl font-semibold mb-2">Add Room</h1>
-      <p className="text-gray-500 mb-8">
+    <div className="px-4 max-w-5xl animate-admin-fadeIn">
+      <h1 className="text-2xl font-bold text-admin-heading mb-2">Add Room</h1>
+      <p className="text-admin-text text-sm mb-8">
         Fill in the details carefully and accurate room details, pricing, and amenities,
         to enhance the user booking experience.
       </p>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="bg-admin-card rounded-xl border border-admin-border/50 p-6 md:p-8 space-y-8">
         {/* IMAGES */}
-        <div className="mb-8">
-          <label className="block font-medium mb-2">Images</label>
-          <div className="flex gap-4 items-center">
-            {/* {images.map((img, i) => (
-              <img
-                key={i}
-                src={URL.createObjectURL(img)}
-                className="w-20 h-16 object-cover rounded border"
-              />
-            ))} */}
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-1.5">Images</label>
+          <div className="flex gap-4 items-center flex-wrap">
             {images.map((img, i) => (
               <div key={i} className="relative">
                 <img
                   src={URL.createObjectURL(img)}
-                  className="w-20 h-16 object-cover rounded border"
+                  className="w-20 h-16 object-cover rounded-lg border border-admin-border"
                 />
                 <button
                   type="button"
                   onClick={() => removeNewImage(i)}
-                  className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-red-600"
                 >
                   ✕
                 </button>
               </div>
             ))}
-            <label className="w-20 h-16 border border-dashed flex items-center justify-center cursor-pointer">
+            <label className="w-20 h-16 border-2 border-dashed border-admin-border hover:border-vp-gold/60 rounded-xl bg-admin-surface/50 flex items-center justify-center cursor-pointer transition-colors text-admin-text hover:text-vp-gold">
               +
               <input type="file" multiple hidden onChange={handleImageUpload} />
             </label>
           </div>
         </div>
+
+        <div className="border-t border-admin-border/30 my-6" />
+
         {/* ROOM TYPE + PRICE */}
-        <div className="grid grid-cols-2 gap-6 mb-">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm mb-1">Room Type</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Room Type</label>
             <input
               type="text"
               name="name"
               value={roomData.name}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Price / night</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Price / night</label>
             <input
               type="number"
               name="pricePerNight"
               value={roomData.pricePerNight}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
             />
           </div>
         </div>
 
         {/* DESCRIPTION */}
-        <div className="mb-6">
-          <label className="block text-sm mb-1">Description</label>
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-1.5">Description</label>
           <textarea
             name="description"
             rows={3}
             value={roomData.description}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
           />
         </div>
 
+        <div className="border-t border-admin-border/30 my-6" />
+
         {/* AMENITIES */}
-        <div className="mb-8">
-          <label className="block font-medium mb-2">Amenities</label>
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-1.5">Amenities</label>
 
           <div className="space-y-2 mb-4">
             {predefinedAmenities.map((item) => (
-              <label key={item} className="flex items-center gap-2 text-sm">
+              <label key={item} className="flex items-center gap-2 text-sm text-admin-text cursor-pointer">
                 <input
                   type="checkbox"
                   checked={amenities.includes(item)}
                   onChange={() => toggleAmenity(item)}
+                  className="accent-vp-gold"
                 />
                 {item}
               </label>
@@ -459,13 +222,13 @@ const AddRoom = () => {
             {amenities.map((item) => (
               <div
                 key={item}
-                className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                className="bg-vp-gold/10 text-vp-gold rounded-full px-3 py-1 text-xs font-medium flex items-center gap-1"
               >
                 <span>{item}</span>
                 <button
                   type="button"
                   onClick={() => removeAmenity(item)}
-                  className="text-red-500 font-bold"
+                  className="text-red-400 hover:text-red-300 font-bold"
                 >
                   ✕
                 </button>
@@ -478,72 +241,78 @@ const AddRoom = () => {
               placeholder="Add custom amenity"
               value={customAmenity}
               onChange={(e) => setCustomAmenity(e.target.value)}
-              className="border px-3 py-2 rounded w-full"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
             />
             <button
               type="button"
               onClick={addCustomAmenity}
-              className="bg-blue-600 text-white px-4 rounded"
+              className="bg-admin-surface text-admin-text hover:bg-admin-hover border border-admin-border rounded-lg px-4 py-2.5 transition-colors hover:text-vp-gold"
             >
               Add
             </button>
           </div>
         </div>
 
+        <div className="border-t border-admin-border/30 my-6" />
+
         {/* META */}
-        <div className="grid grid-cols-2 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm mb-1">Max Guests</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Max Guests</label>
             <input
               type="number"
               name="maxGuests"
               value={roomData.maxGuests}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Room Size</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Room Size</label>
             <input
               type="text"
               name="roomSize"
               value={roomData.roomSize}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Max Beds</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Max Beds</label>
             <input
               type="text"
               name="maxBeds"
               value={roomData.maxBeds}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Discount Price(optional)</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Discount Price (optional)</label>
             <input
               type="text"
               name="discountPrice"
               value={roomData.discountPrice}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
             />
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-600 text-white px-6 py-2 rounded"
-        >
-          {loading ? "Adding..." : "Add Room"}
-        </button>
+        <div className="border-t border-admin-border/30 my-6" />
+
+        <div className="flex items-center gap-4">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-vp-gold text-vp-dark font-bold hover:bg-amber-400 rounded-lg px-6 py-3 transition-all shadow-lg shadow-vp-gold/20 w-full md:w-auto disabled:opacity-50"
+          >
+            {loading ? "Adding..." : "Add Room"}
+          </button>
+        </div>
       </form>
 
       <SuccessModal open={successOpen}

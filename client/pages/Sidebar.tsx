@@ -1,89 +1,104 @@
 
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, PlusSquare, List, Users, Image, Calendar, Star, Bed, BedDouble, Building2, ClipboardList, PartyPopper } from "lucide-react";
+import {
+  LayoutDashboard, BedDouble, Building2, Users, Image, Calendar,
+  Star, ClipboardList, PartyPopper, ChevronRight
+} from "lucide-react";
 
+interface SidebarProps {
+  onNavigate?: () => void;
+}
 
-const Sidebar = () => {
+const sidebarSections = [
+  {
+    label: "Overview",
+    links: [
+      { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
+    ],
+  },
+  {
+    label: "Management",
+    links: [
+      { name: "Rooms", path: "/admin/list-rooms", icon: BedDouble },
+      { name: "Banquets", path: "/admin/list-banquets", icon: Building2 },
+      { name: "Users", path: "/admin/list-users", icon: Users },
+    ],
+  },
+  {
+    label: "Content",
+    links: [
+      { name: "Gallery", path: "/admin/gallery", icon: Image },
+      { name: "Events", path: "/admin/list-events", icon: Calendar },
+      { name: "Reviews", path: "/admin/list-reviews", icon: Star },
+    ],
+  },
+  {
+    label: "Requests",
+    links: [
+      { name: "Room Requests", path: "/admin/room-request", icon: ClipboardList },
+      { name: "Banquet Requests", path: "/admin/banquete-request", icon: PartyPopper },
+    ],
+  },
+];
 
-    const sidebarLinks = [
-    {
-      name: "Dashboard",
-      path: "/admin/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      name: "List Room",
-      path: "/admin/list-rooms",
-      icon: BedDouble,
-    },
-    // {
-    //   name: "Add Room",
-    //   path: "/admin/add-room",
-    //   icon: PlusSquare,
-    // },
-    {
-      name: "List Banquets",
-      path: "/admin/list-banquets",
-      icon: Building2,
-    },
-    // {
-    //   name: "Add Banquete",
-    //   path: "/admin/add-banquete",
-    //   icon: PlusSquare,
-    // },
-    {
-      name: "List Users",
-      path: "/admin/list-users",
-      icon: Users,
-    },
-    {
-      name: "Gallery",
-      path: "/admin/gallery",
-      icon: Image,
-    },
-    // {
-    //   name: "Add Event",
-    //   path: "/admin/add-event",
-    //   icon: PlusSquare,
-    // },
-    {
-      name: "List Events",
-      path: "/admin/list-events",
-      icon: Calendar,
-    },
-    {
-      name: "List Reviews",
-      path: "/admin/list-reviews",
-      icon: Star,
-    },
-    {
-      name: "Room Requests",
-      path: "/admin/room-request",
-      icon: ClipboardList
-    },
-    {
-      name: "Banquete Requests",
-      path: "/admin/banquete-request",
-      icon: PartyPopper
-    }
-  ];
-    
-    return (
-        <aside className='md:w-64 w-16 border-r h-full text-base border-gray-300 pt-4 flex
-        flex-col transition-all duration-300'>
-            {sidebarLinks.map((item,index) => {
+const Sidebar = ({ onNavigate }: SidebarProps) => {
+  return (
+    <aside className="w-64 h-full bg-admin-card/80 backdrop-blur-xl border-r border-admin-border/50 flex flex-col overflow-y-auto admin-scroll">
+      {/* Admin Brand */}
+      <div className="px-5 pt-6 pb-4 border-b border-admin-border/50">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-vp-gold/90 to-amber-600 flex items-center justify-center shadow-lg shadow-vp-gold/20">
+            <LayoutDashboard size={18} className="text-vp-dark" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-admin-heading tracking-wide">Ojas Resort</p>
+            <p className="text-[10px] text-admin-text uppercase tracking-widest">Admin Panel</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 space-y-5">
+        {sidebarSections.map((section) => (
+          <div key={section.label}>
+            <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-admin-text/60">
+              {section.label}
+            </p>
+            <div className="space-y-0.5">
+              {section.links.map((item) => {
                 const Icon = item.icon;
                 return (
-                    <NavLink to={item.path} key={index} end='admin' className={({isActive}) => `
-                    flex items-center py-3 px-4 md:px-8 gap-3 ${isActive ? "border-r-4 md:border-r-[6px] bg-blue-600/10 border-blue-600 text-blue-600" : 
-                    "hover:bg-gray-100/90 border-white text-gray-700"}`}>
-                    <Icon size={18} />
-                    <p className='md:block hidden text-center'>{item.name}</p>
-                </NavLink>
-                )
-            })}
-        </aside>
-    )
+                  <NavLink
+                    to={item.path}
+                    key={item.path}
+                    end={item.path === "/admin/dashboard"}
+                    onClick={onNavigate}
+                    className={({ isActive }) => `
+                      flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                      transition-all duration-200 group relative
+                      ${isActive
+                        ? "bg-vp-gold/10 text-vp-gold border-l-[3px] border-vp-gold shadow-sm shadow-vp-gold/5"
+                        : "text-admin-text hover:text-admin-heading hover:bg-admin-hover border-l-[3px] border-transparent"
+                      }
+                    `}
+                  >
+                    <Icon size={17} className="shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                    <span className="truncate">{item.name}</span>
+                    <ChevronRight size={14} className="ml-auto opacity-0 group-hover:opacity-60 transition-opacity shrink-0" />
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </nav>
+
+      {/* Footer */}
+      <div className="px-5 py-4 border-t border-admin-border/50">
+        <p className="text-[10px] text-admin-text/40 text-center">© 2026 Ojas Resort</p>
+      </div>
+    </aside>
+  );
 };
 
 export default Sidebar;

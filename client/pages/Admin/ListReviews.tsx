@@ -65,21 +65,48 @@ const ListReviews = () => {
 
 
   if (loading) {
-    return <p className="text-center mt-10">Loading reviews...</p>;
+    return (
+      <div className="p-6 max-w-7xl mx-auto animate-admin-fadeIn">
+        <div className="h-8 w-56 rounded skeleton-pulse mb-6" />
+        <div className="grid gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-admin-card rounded-xl border border-admin-border/50 p-5">
+              <div className="flex justify-between items-center mb-3">
+                <div className="space-y-2">
+                  <div className="h-5 w-32 rounded skeleton-pulse" />
+                  <div className="h-3 w-40 rounded skeleton-pulse" />
+                </div>
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, j) => (
+                    <div key={j} className="h-4 w-4 rounded skeleton-pulse" />
+                  ))}
+                </div>
+              </div>
+              <div className="h-3 w-full rounded skeleton-pulse mb-2" />
+              <div className="h-3 w-3/4 rounded skeleton-pulse mb-3" />
+              <div className="h-3 w-28 rounded skeleton-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Manage Reviews</h1>
+    <div className="p-6 max-w-7xl mx-auto animate-admin-fadeIn">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-admin-heading">Manage Reviews</h1>
+        <p className="text-admin-text text-sm mt-1">Monitor and manage guest feedback</p>
+      </div>
 
       {reviews.length === 0 ? (
-        <p className="text-gray-500">No reviews found</p>
+        <p className="text-admin-text">No reviews found</p>
       ) : (
         <div className="grid gap-6">
           {reviews.map((review) => (
             <div
               key={review._id}
-              className="bg-white shadow-md rounded-xl p-6 border relative"
+              className="bg-admin-card rounded-xl border border-admin-border/50 p-5 relative"
             >
               {/* Delete Button */}
               <button
@@ -87,7 +114,7 @@ const ListReviews = () => {
                     setDeleteOpen(true)
                 }}
                 disabled={deletingId === review._id}
-                className="absolute top-4 right-4 text-red-600 hover:text-red-800"
+                className="absolute top-4 right-4 text-admin-text/40 hover:text-red-400 transition-colors p-2 rounded-lg hover:bg-red-500/10"
               >
                 <Trash2 size={20} />
               </button>
@@ -95,10 +122,10 @@ const ListReviews = () => {
               {/* Header */}
               <div className="flex justify-between items-center mb-2">
                 <div>
-                  <h2 className="font-semibold text-lg">
+                  <h2 className="text-admin-heading font-semibold text-lg">
                     {review.user?.name}
                   </h2>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-admin-text text-xs">
                     {review.targetType === "room"
                       ? `Room: ${review.room?.name}`
                       : `Banquet: ${review.banquetHall?.name}`}
@@ -114,7 +141,7 @@ const ListReviews = () => {
                       className={
                         i < review.ratingStars
                           ? "text-yellow-400 fill-yellow-400"
-                          : "text-gray-300"
+                          : "text-admin-border"
                       }
                     />
                   ))}
@@ -125,7 +152,7 @@ const ListReviews = () => {
               {/* <p className="text-gray-700 leading-relaxed mb-4">
                 {review.comment}
               </p> */}
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <p className="text-admin-text text-sm leading-relaxed">
                     "
                     {expandedReviews[review._id] || review.comment.length <= 150
                         ? review.comment
@@ -136,7 +163,7 @@ const ListReviews = () => {
                     {review.comment.length > 150 && (
                     <button
                         onClick={() => toggleReview(review._id)}
-                        className="text-vp-gold text-xs font-bold mt-1 underline"
+                        className="text-vp-gold hover:text-amber-400 text-xs font-bold mt-1 underline transition-colors"
                     >
                         {expandedReviews[review._id] ? "Show less" : "Read more"}
                     </button>
@@ -158,7 +185,7 @@ const ListReviews = () => {
               )} */}
 
               {/* Footer */}
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-admin-text/60 mt-3">
                 Posted on {new Date(review.createdAt).toLocaleDateString()}
               </div>
             </div>

@@ -52,7 +52,13 @@ const ListBanquets = () => {
   };
 
   if (loading) {
-    return <div className="py-10 text-center">Loading Banquets...</div>;
+    return (
+      <div className="space-y-3 py-10">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="skeleton-pulse h-12 rounded-lg" />
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -60,14 +66,14 @@ const ListBanquets = () => {
       {/* PAGE HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
-      <h1 className="text-3xl font-bold mb-2">Banquets</h1>
-      <p className="text-gray-500 mb-8">
+      <h1 className="text-2xl font-bold text-admin-heading mb-1">Banquets</h1>
+      <p className="text-admin-text text-sm">
         Manage banquet halls, pricing, capacity, and availability.
       </p>
       </div>
       <button
           onClick={() => navigate("/admin/add-banquete")}
-          className="flex items-center gap-2 bg-vp-gold text-vp-dark px-5 py-2 rounded-lg font-semibold hover:opacity-90 transition"
+          className="flex items-center gap-2 bg-vp-gold text-vp-dark px-5 py-2 rounded-lg font-semibold hover:bg-amber-400 transition-all"
         >
           <Plus size={18} />
           Add New Banquete
@@ -75,26 +81,26 @@ const ListBanquets = () => {
       </div>
 
       {/* BANQUETS TABLE */}
-      <div className="bg-white rounded-xl shadow p-6 overflow-x-auto">
+      <div className="bg-admin-card rounded-xl border border-admin-border/50 overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="border-b text-gray-500">
-            <tr>
-              <th className="py-2 text-left">Banquet</th>
-              <th className="py-2 hidden md:table-cell">Capacity</th>
-              <th className="py-2 hidden md:table-cell">Price / Plate</th>
-              <th className="py-2 hidden md:table-cell">Rating</th>
-              <th className="py-2">Status</th>
-              <th className="py-2 text-right">Actions</th>
+          <thead>
+            <tr className="bg-admin-surface">
+              <th className="px-6 py-3 text-left text-admin-text text-xs uppercase tracking-wider">Banquet</th>
+              <th className="px-6 py-3 hidden md:table-cell text-admin-text text-xs uppercase tracking-wider">Capacity</th>
+              <th className="px-6 py-3 hidden md:table-cell text-admin-text text-xs uppercase tracking-wider">Price / Plate</th>
+              <th className="px-6 py-3 hidden md:table-cell text-admin-text text-xs uppercase tracking-wider">Rating</th>
+              <th className="px-6 py-3 text-admin-text text-xs uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-right text-admin-text text-xs uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
 
-          <tbody className="divide-y">
+          <tbody>
             {banquets.map((banquet) => (
-              <tr key={banquet._id} className="hover:bg-gray-50">
+              <tr key={banquet._id} className="border-b border-admin-border/30 hover:bg-admin-hover/50 transition-colors">
                 {/* NAME + DESC */}
-                <td className="py-5">
-                  <p className="font-semibold">{banquet.name}</p>
-                  <p className="text-xs text-gray-500 line-clamp-1">
+                <td className="px-6 py-4">
+                  <p className="font-semibold text-admin-heading">{banquet.name}</p>
+                  <p className="text-xs text-admin-text line-clamp-1">
                     {banquet.description}
                   </p>
 
@@ -104,7 +110,7 @@ const ListBanquets = () => {
                       (event: string, idx: number) => (
                         <span
                           key={idx}
-                          className="px-2 py-0.5 text-[10px] rounded-full bg-gray-100 text-gray-700"
+                          className="bg-vp-gold/10 text-vp-gold text-[10px] rounded-full px-2.5 py-0.5"
                         >
                           {event}
                         </span>
@@ -114,27 +120,27 @@ const ListBanquets = () => {
                 </td>
 
                 {/* CAPACITY */}
-                <td className="py-5 hidden md:table-cell">
+                <td className="px-6 py-4 hidden md:table-cell text-admin-text">
                   {banquet.capacity} Guests
                 </td>
 
                 {/* PRICE */}
-                <td className="py-5 hidden md:table-cell">
+                <td className="px-6 py-4 hidden md:table-cell text-admin-text">
                   ₹{banquet.pricePerPlate}
                 </td>
 
                 {/* RATING */}
-                <td className="py-5 hidden md:table-cell">
+                <td className="px-6 py-4 hidden md:table-cell text-admin-text">
                   ⭐ {banquet.averageRating} ({banquet.reviewCount})
                 </td>
 
                 {/* STATUS */}
-                <td className="py-5">
+                <td className="px-6 py-4">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                    className={`rounded-full text-xs font-medium px-3 py-1 ${
                       banquet.isActive
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
+                        ? "bg-green-500/10 text-green-400"
+                        : "bg-red-500/10 text-red-400"
                     }`}
                   >
                     {banquet.isActive ? "Available" : "Not Available"}
@@ -142,11 +148,11 @@ const ListBanquets = () => {
                 </td>
 
                 {/* ACTIONS */}
-                <td className="py-3 text-right flex justify-end gap-3">
+                <td className="px-6 py-4 text-right flex justify-end gap-3">
                   {/* TOGGLE */}
                   <button
                     onClick={() => openToggleModal(banquet)}
-                    className="px-3 py-1 rounded-lg border text-xs hover:bg-gray-100"
+                    className="bg-admin-surface text-admin-text hover:bg-admin-hover border border-admin-border rounded-lg px-3 py-1 text-xs transition-all"
                   >
                     Toggle
                   </button>
@@ -156,7 +162,7 @@ const ListBanquets = () => {
                     onClick={() =>
                       navigate(`/admin/update-banquet/${banquet._id}`)
                     }
-                    className="p-2 rounded-lg hover:bg-gray-100"
+                    className="p-2 rounded-lg bg-admin-surface hover:bg-admin-hover hover:text-vp-gold border border-admin-border transition-all"
                   >
                     <Pencil size={16} />
                   </button>

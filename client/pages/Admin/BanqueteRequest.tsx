@@ -50,26 +50,39 @@ const banquetBookings = bookings.filter(
 
   if (loading)
     return (
-      <div className="p-10 text-center text-gray-500">
-        Loading banquet bookings...
+      <div className="p-8 min-h-screen animate-admin-fadeIn">
+        <div className="skeleton-pulse h-8 w-72 rounded-lg mb-8" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-admin-card rounded-xl border border-admin-border/50 overflow-hidden">
+              <div className="p-6 space-y-4">
+                <div className="skeleton-pulse h-6 w-48 rounded" />
+                <div className="skeleton-pulse h-4 w-36 rounded" />
+                <div className="skeleton-pulse h-4 w-full rounded" />
+                <div className="skeleton-pulse h-4 w-28 rounded" />
+                <div className="skeleton-pulse h-4 w-full rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
 
   if (error)
     return (
-      <div className="p-10 text-center text-red-500">
+      <div className="p-10 text-center text-red-400">
         {error}
       </div>
     );
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-serif font-bold text-vp-dark mb-8">
+    <div className="p-8 min-h-screen animate-admin-fadeIn">
+      <h1 className="text-2xl font-bold text-admin-heading mb-8">
         Banquet Booking Requests
       </h1>
 
       {banquetBookings.length === 0 && (
-        <p className="text-gray-500">
+        <p className="text-admin-text">
           No banquet bookings found.
         </p>
       )}
@@ -78,88 +91,90 @@ const banquetBookings = bookings.filter(
         {activeBanqueteRequests.map((booking) => (
           <div
             key={booking._id}
-            className="bg-white rounded-2xl shadow-md border overflow-hidden"
+            className="bg-admin-card rounded-xl border border-admin-border/50 overflow-hidden hover:border-admin-border transition-all"
           >
             <div className="p-6 space-y-4">
               {/* Header */}
               <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <Building2 size={18} />
+                <h2 className="text-lg font-bold text-admin-heading flex items-center gap-2">
+                  <Building2 size={18} className="text-vp-gold/70" />
                   {booking.banquetHall?.name}
                 </h2>
-                <span className="px-3 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-700">
+                <span className="bg-blue-500/10 text-blue-400 rounded-full px-3 py-1 text-xs font-medium">
                   BANQUET
                 </span>
               </div>
 
               {/* User Info */}
-              <div className="text-sm text-gray-700 space-y-1">
+              <div className="text-sm text-admin-text space-y-1">
                 <div className="flex items-center gap-2">
-                  <Users size={14} /> {booking.user.name}
+                  <Users size={14} className="text-vp-gold/70" /> <span className="text-admin-heading font-medium">{booking.user.name}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Phone size={14} /> {booking.user.phone}
+                  <Phone size={14} className="text-admin-text" /> <span className="text-admin-heading font-medium">{booking.user.phone}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Mail size={14} /> {booking.user.email}
+                  <Mail size={14} className="text-admin-text" /> <span className="text-admin-heading font-medium">{booking.user.email}</span>
                 </div>
               </div>
 
               {/* Dates */}
-              <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+              <div className="grid grid-cols-2 gap-4 text-sm text-admin-text">
                 <div className="flex items-center gap-2">
-                  <Calendar size={14} />
-                  {new Date(booking.fromDate).toDateString()}
+                  <Calendar size={14} className="text-vp-gold/70" />
+                  <span className="text-admin-heading font-medium">{new Date(booking.fromDate).toDateString()}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar size={14} />
-                  {new Date(booking.toDate).toDateString()}
+                  <Calendar size={14} className="text-vp-gold/70" />
+                  <span className="text-admin-heading font-medium">{new Date(booking.toDate).toDateString()}</span>
                 </div>
               </div>
 
               {/* Time */}
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Clock size={14} />
-                {booking.checkInTime} → {booking.checkOutTime}
+              <div className="flex items-center gap-2 text-sm text-admin-text">
+                <Clock size={14} className="text-vp-gold/70" />
+                <span className="text-admin-heading font-medium">{booking.checkInTime} → {booking.checkOutTime}</span>
               </div>
 
               {/* Event Info */}
-              <div className="flex flex-wrap gap-6 text-sm text-gray-600">
+              <div className="flex flex-wrap gap-6 text-sm text-admin-text">
                 <span className="flex items-center gap-1">
-                  <Users size={14} /> {booking.numberOfGuests} Guests
+                  <Users size={14} className="text-vp-gold/70" /> <span className="text-admin-heading font-medium">{booking.numberOfGuests} Guests</span>
                 </span>
                 <span className="flex items-center gap-1">
-                  <PartyPopper size={14} /> {booking.eventType}
+                  <PartyPopper size={14} className="text-vp-gold/70" /> <span className="text-admin-heading font-medium">{booking.eventType}</span>
                 </span>
               </div>
 
               {/* Special Requests */}
               {booking.specialRequests && (
-                <div className="bg-gray-50 p-3 rounded-lg text-sm">
-                  <strong>Special Request:</strong> {booking.specialRequests}
+                <div className="bg-admin-surface p-3 rounded-lg text-sm text-admin-text border border-admin-border/20">
+                  <strong className="text-admin-heading">Special Request:</strong> {booking.specialRequests}
                 </div>
               )}
-              Status:
-              <span
-                      className={`px-3 py-1 rounded-full ${
+              <div className="flex items-center gap-2 text-sm text-admin-text">
+                Status:
+                <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${
                         booking.status === "Confirmed"
-                          ? "bg-green-100 text-green-700"
+                          ? "bg-green-500/10 text-green-400"
                           : booking.status === "Pending"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-red-100 text-red-700"
+                          ? "bg-yellow-500/10 text-yellow-400"
+                          : "bg-red-500/10 text-red-400"
                       }`}
                     >
                       {booking.status}
                     </span>
+              </div>
 
               {/* Footer */}
-              <div className="flex justify-between items-center pt-4 border-t">
+              <div className="flex justify-between items-center pt-4 border-t border-admin-border/30">
                 {/* <span className="text-lg font-bold text-vp-gold">
                   ₹{booking.totalPrice}
                 </span> */}
                 <button
                       onClick={() => navigate(`/admin/users/${booking.user._id}`)}
-                      className="px-3 py-1 text-xs font-semibold rounded bg-vp-dark text-white hover:opacity-90"
+                      className="bg-vp-gold text-vp-dark font-semibold hover:bg-amber-400 transition-all px-4 py-2 text-xs rounded-lg"
                     >
                       User Details
                     </button>
@@ -167,7 +182,7 @@ const banquetBookings = bookings.filter(
                   onClick={() =>
                     navigate(`/admin/banquet-bookings/${booking._id}`)
                   }
-                  className="flex items-center gap-2 px-5 py-2 bg-vp-dark text-white text-sm rounded-full hover:bg-vp-gold hover:text-vp-dark transition"
+                  className="flex items-center gap-2 bg-admin-surface text-admin-text hover:text-vp-gold hover:bg-admin-hover border border-admin-border px-5 py-2 text-sm rounded-lg transition-all"
                 >
                   <Eye size={14} /> View
                 </button>

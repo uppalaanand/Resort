@@ -10,6 +10,8 @@ export interface IUser extends Document {
   phone?: string;
   authProvider: 'local' | 'google';
   googleId?: string;
+  firebaseUid?: string;
+  profilePhoto?: string;
   resetPasswordToken?: string;
   resetPasswordExpire?: Date;
   matchPassword: (enteredPassword: string) => Promise<boolean>;
@@ -23,6 +25,8 @@ const UserSchema: Schema = new Schema({
   phone: { type: String },
   authProvider: { type: String, enum: ['local', 'google'], default: 'local' },
   googleId: { type: String },
+  firebaseUid: { type: String },
+  profilePhoto: { type: String },
   resetPasswordToken: String,
   resetPasswordExpire: Date
 }, {

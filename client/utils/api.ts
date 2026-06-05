@@ -102,4 +102,10 @@ export const api = {
   getAllRoomRequests: () => fetchAPI<any[]>('/room-requests'),
   updateRoomRequestStatus: (id: string, status: string) =>
     fetchAPI(`/room-requests/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+
+  // Google Auth
+  googleLogin: (idToken: string) => fetchAPI<any>('/auth/google-login', { method: 'POST', body: JSON.stringify({ idToken }) }),
+  googleCompleteProfile: (data: { tempToken: string; phone: string }) =>
+    fetchAPI<any>('/auth/google-complete-profile', { method: 'POST', body: JSON.stringify(data) }),
+  forgotPassword: (email: string) => fetchAPI<any>('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
 };

@@ -77,13 +77,19 @@ const handleDeleteEvent = async (eventId: string) => {
   const filteredEvents = getFilteredEvents();
 
   return (
-    <div className="px-4 max-w-6xl mx-auto">
+    <div className="px-4 max-w-6xl mx-auto animate-admin-fadeIn">
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-admin-heading">Events</h1>
+        <p className="text-admin-text text-sm mt-1">Manage and organize resort events</p>
+      </div>
+
       <div className="flex justify-between items-center mb-6">
         <div>
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="border px-3 py-2 rounded"
+            className="bg-admin-surface border border-admin-border text-admin-heading rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 outline-none"
           >
             <option value="All">All Events</option>
             <option value="Ongoing">Ongoing</option>
@@ -94,44 +100,63 @@ const handleDeleteEvent = async (eventId: string) => {
 
         <button
           onClick={() => navigate("/admin/add-event")}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-vp-gold text-vp-dark font-semibold px-4 py-2 rounded-lg hover:bg-amber-400 transition-all"
         >
           Add New Event
         </button>
       </div>
 
       {loading ? (
-        <p>Loading events...</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-admin-card rounded-xl border border-admin-border/50 overflow-hidden">
+              <div className="w-full h-40 skeleton-pulse" />
+              <div className="p-5 space-y-3">
+                <div className="h-5 w-3/4 rounded skeleton-pulse" />
+                <div className="h-3 w-1/2 rounded skeleton-pulse" />
+                <div className="h-3 w-full rounded skeleton-pulse" />
+                <div className="flex gap-2 mt-2">
+                  <div className="h-7 w-14 rounded-lg skeleton-pulse" />
+                  <div className="h-7 w-16 rounded-lg skeleton-pulse" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : filteredEvents.length === 0 ? (
-        <p>No events found.</p>
+        <p className="text-admin-text">No events found.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredEvents.map((event) => (
-            <div key={event._id} className="border rounded shadow p-4 flex flex-col">
+            <div key={event._id} className="bg-admin-card rounded-xl border border-admin-border/50 overflow-hidden group hover:border-admin-border transition-all flex flex-col">
               {event.images.length > 0 && (
-                <img
-                  src={getImageUrl(event.images[0]) }
-                  alt={event.title}
-                  className="w-full h-40 object-cover rounded mb-4"
-                />
+                <div className="overflow-hidden">
+                  <img
+                    src={getImageUrl(event.images[0]) }
+                    alt={event.title}
+                    className="w-full h-40 object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
               )}
-              <h2 className="text-xl font-semibold mb-1">{event.title}</h2>
-              <p className="text-gray-500 text-sm mb-2">
-                {new Date(event.startDate).toLocaleDateString()} -{" "}
-                {new Date(event.endDate).toLocaleDateString()}
-              </p>
-              <p className="text-gray-700 mb-4">{event.description}</p>
-              <div className="flex gap-2 mt-auto">
-                <button
-                  onClick={() => navigate(`/admin/events/edit/${event._id}`)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded"
-                >
-                  Edit
-                </button>
-                <button onClick={() => { setSelectedEvent(event);
-                                    setDeleteOpen(true);}} className="bg-red-600 text-white px-3 py-1 rounded">
-                    Delete
-                </button>
+              <div className="p-5 flex flex-col flex-1">
+                <h2 className="text-admin-heading font-semibold text-lg mb-1">{event.title}</h2>
+                <p className="text-admin-text text-xs mb-2">
+                  {new Date(event.startDate).toLocaleDateString()} -{" "}
+                  {new Date(event.endDate).toLocaleDateString()}
+                </p>
+                <p className="text-admin-text text-sm mb-4 line-clamp-2">{event.description}</p>
+                <div className="flex gap-2 mt-auto">
+                  <button
+                    onClick={() => navigate(`/admin/events/edit/${event._id}`)}
+                    className="bg-admin-surface text-admin-text hover:text-vp-gold hover:bg-admin-hover border border-admin-border text-xs rounded-lg px-3 py-1.5 transition-all"
+                  >
+                    Edit
+                  </button>
+                  <button onClick={() => { setSelectedEvent(event);
+                                      setDeleteOpen(true);}} className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 text-xs rounded-lg px-3 py-1.5 transition-all">
+                      Delete
+                  </button>
+                </div>
               </div>
             </div>
           ))}

@@ -139,7 +139,8 @@ import { getImageUrl } from "../utils/images";
 import Toast from "../components/Toast";
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, login, logout } = useAuth();
+  console.log("User in Profile:", user);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
@@ -198,10 +199,11 @@ const Profile = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.updateProfile(formData);
+      const response = await api.updateProfile(formData);
+      login(response as any);
       showToast("Profile updated successfully", "success");
-    } catch {
-      showToast("Failed to update profile", "error");
+    } catch (err: any) {
+      showToast(err.message || "Failed to update profile", "error");
     } finally {
       setSaving(false);
     }
@@ -212,12 +214,13 @@ const Profile = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.updateProfile(formData);
+      const response = await api.updateProfile(formData);
+      login(response as any);
       showToast("Password changed successfully", "success");
       setPasswords({ currentPassword: "", newPassword: "" });
       setFormData({ ...formData, currentPassword: "", newPassword: "" });
-    } catch {
-      showToast("Failed to change password", "error");
+    } catch (err: any) {
+      showToast(err.message || "Failed to change password", "error");
     } finally {
       setSaving(false);
     }

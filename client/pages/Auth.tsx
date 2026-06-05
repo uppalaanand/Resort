@@ -1,10 +1,11 @@
 
 
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../utils/api';
 import { UserRole } from '../types';
+import { signInWithGoogle } from '../utils/firebase';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -22,6 +23,37 @@ const Auth = () => {
   const location = useLocation();
   // @ts-ignore
   const from = location.state?.from?.pathname || '/';
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      const result = await signInWithGoogle();
+      // @ts-ignore
+      const idToken = await result.user.getIdToken();
+      const response = await api.googleLogin(idToken);
+
+      if (response.requiresProfileCompletion) {
+        navigate('/complete-profile', { 
+          state: { 
+            tempToken: response.tempToken, 
+            user: response.user 
+          } 
+        });
+      } else {
+        login(response);
+        if (response.role === UserRole.ADMIN) {
+          navigate('/admin');
+        } else {
+          navigate(from === '/auth' ? '/profile' : from);
+        }
+      }
+    } catch (err: any) {
+      setError(err.message || 'Google Authentication failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({...formData, [e.target.name]: e.target.value});
@@ -155,6 +187,13 @@ const Auth = () => {
                 value={formData.password}
                 onChange={handleChange}
               />
+              {isLogin && (
+                <div className="flex justify-end mt-1.5">
+                  <Link to="/forgot-password" className="text-xs font-semibold text-vp-gold hover:underline">
+                    Forgot Password?
+                  </Link>
+                </div>
+              )}
             </div>
 
             <button
@@ -165,6 +204,40 @@ const Auth = () => {
               {loading ? 'Processing...' : (isLogin ? 'Login' : 'Create Account')}
             </button>
           </form>
+
+          <div className="relative my-6 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <span className="relative px-3 bg-white text-xs text-gray-400 uppercase font-bold tracking-wide">Or</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-3 border border-gray-300 py-3.5 rounded-lg font-bold text-gray-700 hover:bg-gray-50 transition-all disabled:opacity-70 shadow-sm"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path
+                fill="#EA4335"
+                d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.67 1.54 14.98 1 12 1 7.35 1 3.37 3.65 1.39 7.56l3.89 3.02C6.2 7.74 8.89 5.04 12 5.04z"
+              />
+              <path
+                fill="#4285F4"
+                d="M23.49 12.27c0-.81-.07-1.59-.2-2.36H12v4.51h6.46c-.29 1.48-1.14 2.73-2.42 3.57v2.97h3.91c2.28-2.1 3.54-5.19 3.54-8.69z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.28 14.78a7.07 7.07 0 0 1-.37-2.22c0-.77.13-1.52.37-2.22L1.39 7.32a11.96 11.96 0 0 0 0 9.36l3.89-2.9z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.91-2.97c-1.08.72-2.48 1.16-4.05 1.16-3.11 0-5.8-2.7-6.72-5.54l-3.89 3.02C3.37 20.35 7.35 23 12 23z"
+              />
+            </svg>
+            Continue with Google
+          </button>
 
           <div className="mt-6 text-center">
              <p className="text-xs text-gray-400">By continuing, you agree to our Terms of Service and Privacy Policy.</p>

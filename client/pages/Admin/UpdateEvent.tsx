@@ -68,7 +68,6 @@ const UpdateEvent = () => {
     setNewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -95,141 +94,125 @@ const UpdateEvent = () => {
   };
 
   return (
-    <div className="px-4 max-w-5xl">
-      <h1 className="text-3xl font-semibold mb-2">Update Event</h1>
-      <p className="text-gray-500 mb-8">
+    <div className="p-6 max-w-5xl animate-admin-fadeIn">
+      <h1 className="text-2xl font-bold text-admin-heading mb-1.5">Update Event</h1>
+      <p className="text-admin-text text-sm mb-8">
         Edit the event details to update the event information visible to users.
       </p>
 
-      <form onSubmit={handleSubmit}>
-        {/* EXISTING IMAGES */}
-        {eventData.images.length > 0 && (
-          <div className="mb-6">
-            <label className="block font-medium mb-2">Existing Images</label>
-            <div className="flex gap-4 items-center flex-wrap">
-              {/* {eventData.images.map((img, i) => (
+      <form onSubmit={handleSubmit} className="bg-admin-card rounded-xl border border-admin-border/50 p-6 md:p-8 space-y-6">
+        {/* IMAGES AREA */}
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-1.5">Event Images</label>
+          <div className="flex flex-wrap gap-4 items-center">
+            {/* Existing images */}
+            {eventData.images.map((img, i) => (
+              <div key={i} className="relative group">
                 <img
-                  key={i}
                   src={getImageUrl(img)}
                   alt={`Event Image ${i + 1}`}
-                  className="w-24 h-20 object-cover rounded border"
+                  className="w-24 h-20 object-cover rounded-lg border border-admin-border"
                 />
-              ))} */}
-              {eventData.images.map((img, i) => (
-                <div key={i} className="relative">
-                  <img
-                    src={getImageUrl(img)}
-                    alt={`Event Image ${i + 1}`}
-                    className="w-24 h-20 object-cover rounded border"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeExistingImage(img)}
-                    className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+                <button
+                  type="button"
+                  onClick={() => removeExistingImage(img)}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-red-600 shadow-md transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
 
-        {/* NEW IMAGE UPLOAD */}
-        <div className="mb-8">
-          <label className="block font-medium mb-2">Add New Images</label>
-          <div className="flex gap-4 items-center">
-            {/* {newImages.map((img, i) => (
-              <img
-                key={i}
-                src={URL.createObjectURL(img)}
-                className="w-24 h-20 object-cover rounded border"
-              />
-            ))} */}
-              {newImages.map((img, i) => (
-                <div key={i} className="relative">
-                  <img
-                    src={URL.createObjectURL(img)}
-                    className="w-24 h-20 object-cover rounded border"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeNewImage(i)}
-                    className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            <label className="w-24 h-20 border border-dashed flex items-center justify-center cursor-pointer">
-              +
+            {/* New images */}
+            {newImages.map((img, i) => (
+              <div key={i} className="relative group">
+                <img
+                  src={URL.createObjectURL(img)}
+                  alt="New Event Image"
+                  className="w-24 h-20 object-cover rounded-lg border border-admin-border"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeNewImage(i)}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-red-600 shadow-md transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+
+            <label className="w-24 h-20 border-2 border-dashed border-admin-border hover:border-vp-gold/60 rounded-xl bg-admin-surface/50 transition-colors cursor-pointer flex flex-col items-center justify-center text-admin-text hover:text-vp-gold">
+              <span className="text-xl font-light">+</span>
+              <span className="text-[10px] uppercase tracking-wider font-semibold">Upload</span>
               <input type="file" multiple hidden onChange={handleImageUpload} />
             </label>
           </div>
         </div>
 
         {/* EVENT TITLE */}
-        <div className="mb-6">
-          <label className="block text-sm mb-1">Event Title</label>
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-1.5">Event Title</label>
           <input
             type="text"
             name="title"
             value={eventData.title}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
             placeholder="Enter event title"
             required
           />
         </div>
 
         {/* DESCRIPTION */}
-        <div className="mb-6">
-          <label className="block text-sm mb-1">Description</label>
+        <div>
+          <label className="block text-sm font-medium text-admin-heading mb-1.5">Description</label>
           <textarea
             name="description"
-            rows={3}
+            rows={4}
             value={eventData.description}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors resize-none"
             placeholder="Enter event description"
             required
           />
         </div>
 
         {/* DATES */}
-        <div className="grid grid-cols-2 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm mb-1">Start Date</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">Start Date</label>
             <input
               type="date"
               name="startDate"
               value={eventData.startDate}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
               required
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">End Date</label>
+            <label className="block text-sm font-medium text-admin-heading mb-1.5">End Date</label>
             <input
               type="date"
               name="endDate"
               value={eventData.endDate}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 transition-colors"
               required
             />
           </div>
         </div>
 
         {/* SUBMIT BUTTON */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-green-600 text-white px-6 py-2 rounded"
-        >
-          {loading ? "Updating..." : "Update Event"}
-        </button>
+        <div className="pt-4 border-t border-admin-border/30">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-vp-gold text-vp-dark font-bold hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg px-6 py-3 transition-all shadow-lg shadow-vp-gold/20 w-full md:w-auto"
+          >
+            {loading ? "Updating..." : "Update Event"}
+          </button>
+        </div>
       </form>
 
       {/* SUCCESS MODAL */}

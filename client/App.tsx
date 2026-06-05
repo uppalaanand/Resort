@@ -20,6 +20,8 @@ import AddRoom from './pages/Admin/AddRoom';
 import AddBanquete from './pages/Admin/AddBanquete';
 import Activities from './pages/Activities';
 import Contact from './pages/Contact';
+import CompleteProfile from './pages/CompleteProfile';
+import ForgotPassword from './pages/ForgotPassword';
 import AdminLayout from './pages/AdminLayout';
 import Dashboard from './pages/Admin/Dashbourd';
 import ListUsers from './pages/Admin/ListUsers';
@@ -76,6 +78,8 @@ const App = () => {
             <Route path='/activities' element={<Activities />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/policies" element={<PolicyPage />} />
+            <Route path="/complete-profile" element={<CompleteProfile />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/admin" element={<ProtectedRoute requiredRole={UserRole.ADMIN}><AdminLayout /></ProtectedRoute>} >
               <Route index element={<Navigate to="dashboard" />} />
               <Route path='/admin/dashboard' element={<Dashboard />} />

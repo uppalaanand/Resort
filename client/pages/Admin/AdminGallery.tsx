@@ -64,16 +64,19 @@ const [selectedGallery, setSelectedGallery] = useState<GalleryItem | null>(null)
   });
 
   return (
-    <div className="p-6">
+    <div className="p-6 animate-admin-fadeIn">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Gallery Management
-        </h1>
+        <div>
+          <h1 className="text-2xl font-bold text-admin-heading">
+            Gallery Management
+          </h1>
+          <p className="text-admin-text text-sm mt-1">Upload and manage resort photo gallery</p>
+        </div>
 
         <button
           onClick={() => navigate("/admin/gallery/create")}
-          className="flex items-center gap-2 bg-vp-gold text-vp-dark px-5 py-2 rounded-lg font-semibold hover:opacity-90 transition"
+          className="flex items-center gap-2 bg-vp-gold text-vp-dark px-5 py-2 rounded-lg font-semibold hover:bg-amber-400 transition-all"
         >
           <Plus size={18} />
           Add Gallery Photo
@@ -85,7 +88,7 @@ const [selectedGallery, setSelectedGallery] = useState<GalleryItem | null>(null)
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="border rounded-lg px-4 py-2 w-full md:w-56"
+          className="bg-admin-surface border border-admin-border text-admin-heading rounded-lg px-4 py-2 text-sm w-full md:w-56 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 outline-none"
         >
           {categories.map((cat) => (
             <option key={cat} value={cat}>
@@ -99,53 +102,67 @@ const [selectedGallery, setSelectedGallery] = useState<GalleryItem | null>(null)
           placeholder="Search by alt text..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border rounded-lg px-4 py-2 w-full md:w-80"
+          className="bg-admin-surface border border-admin-border text-admin-heading placeholder-admin-text/40 rounded-lg px-4 py-2 text-sm w-full md:w-80 focus:ring-2 focus:ring-vp-gold/40 focus:border-vp-gold/60 outline-none"
         />
       </div>
 
       {/* CONTENT */}
       {loading ? (
-        <p className="text-gray-500">Loading gallery...</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="bg-admin-card rounded-xl border border-admin-border/50 overflow-hidden">
+              <div className="w-full h-56 skeleton-pulse" />
+              <div className="p-3">
+                <div className="h-3 w-3/4 rounded skeleton-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : filteredGallery.length === 0 ? (
-        <p className="text-gray-500">No gallery images found.</p>
+        <p className="text-admin-text">No gallery images found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredGallery.flatMap((item) =>
             item.images.map((img, index) => (
               <div
                 key={`${item._id}-${index}`}
-                className="relative group rounded-xl overflow-hidden shadow-md bg-white"
+                className="bg-admin-card rounded-xl border border-admin-border/50 overflow-hidden group hover:border-admin-border transition-all"
               >
-                <img
-                  src={getImageUrl(img)}
-                  alt={item.alt}
-                  className="w-full h-56 object-cover"
-                />
+                <div className="relative overflow-hidden">
+                  <img
+                    src={getImageUrl(img)}
+                    alt={item.alt}
+                    className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
 
-                {/* OVERLAY */}
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-4">
-                  <button
-                    onClick={() =>
-                      navigate(`/admin/gallery/edit/${item._id}`)
-                    }
-                    className="bg-white p-2 rounded-full hover:bg-gray-100"
-                  >
-                    <Edit size={18} />
-                  </button>
+                  {/* OVERLAY */}
+                  <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-4">
+                    <button
+                      onClick={() =>
+                        navigate(`/admin/gallery/edit/${item._id}`)
+                      }
+                      className="bg-admin-surface text-admin-text hover:text-vp-gold hover:bg-admin-hover border border-admin-border p-2.5 rounded-lg transition-all"
+                    >
+                      <Edit size={18} />
+                    </button>
 
-                  <button
-                    onClick={() => {setSelectedGallery(item);
-                                setDeleteOpen(true);}}
-                    className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                    <button
+                      onClick={() => {setSelectedGallery(item);
+                                  setDeleteOpen(true);}}
+                      className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 p-2.5 rounded-lg transition-all"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+
+                  {/* CATEGORY TAG */}
+                  <span className="absolute top-2 left-2 bg-vp-gold/90 text-vp-dark text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md">
+                    {item.category}
+                  </span>
                 </div>
 
-                {/* CATEGORY TAG */}
-                <span className="absolute top-2 left-2 bg-vp-gold text-vp-dark text-xs font-bold px-3 py-1 rounded-full uppercase">
-                  {item.category}
-                </span>
+                {/* Alt text */}
+                <p className="text-admin-text text-xs p-3 truncate">{item.alt}</p>
               </div>
             ))
           )}

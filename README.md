@@ -6,3 +6,4 @@ Redis -> Caching
 MongoDB -> Database
 Vercel -> Frontend Deployment
 AWS -> Backend Deployment
+Bravo -> Emails

@@ -47,13 +47,13 @@ const UpdateRoom = () => {
         setRoomData({
           name: room.name || "",
           description: room.description || "",
-          pricePerNight: room.pricePerNight || "",
-          maxGuests: room.maxGuests || "",
+          pricePerNight: room.pricePerNight ? room.pricePerNight.toString() : "",
+          maxGuests: room.maxGuests ? room.maxGuests.toString() : "",
           roomSize: room.roomSize || "",
-          averageRating: room.averageRating || "",
-          reviewCount: room.reviewCount || "",
-          maxBeds: room.maxBeds || "",
-          discountPrice: room.discountPrice || ""
+          averageRating: room.averageRating ? room.averageRating.toString() : "",
+          reviewCount: room.reviewCount ? room.reviewCount.toString() : "",
+          maxBeds: room.maxBeds ? room.maxBeds.toString() : "",
+          discountPrice: room.discountPrice ? room.discountPrice.toString() : ""
         });
         setAmenities(room.amenities || []);
         setExistingImages(room.images || []);

@@ -42,7 +42,27 @@ export const admin = (req: AuthRequest, res: Response, next: NextFunction) => {
   if (req.user && req.user.role === 'admin') {
     next();
   } else {
-    (res as any).status(401);
+    (res as any).status(403);
     throw new Error('Not authorized as an admin');
+  }
+};
+
+// Receptionist, Manager, or Admin
+export const receptionistOrAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (req.user && (req.user.role === 'admin' || req.user.role === 'receptionist' || req.user.role === 'manager')) {
+    next();
+  } else {
+    (res as any).status(403);
+    throw new Error('Not authorized - requires receptionist, manager, or admin role');
+  }
+};
+
+// Manager or Admin only
+export const managerOrAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (req.user && (req.user.role === 'admin' || req.user.role === 'manager')) {
+    next();
+  } else {
+    (res as any).status(403);
+    throw new Error('Not authorized - requires manager or admin role');
   }
 };

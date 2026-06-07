@@ -99,8 +99,8 @@ const AddRoom = () => {
       formData.append("averageRating", roomData.averageRating);
       formData.append("reviewCount", roomData.reviewCount);
       // formData.append("amenities", amenities.join(", "));
-      formData.append("maxBeds", roomData.maxBeds);
-      formData.append("discountPrice", roomData.discountPrice);
+      formData.append("maxBeds", roomData.maxBeds.toString());
+      formData.append("discountPrice", roomData.discountPrice.toString());
 
       images.forEach((img) => {
         formData.append("images", img);

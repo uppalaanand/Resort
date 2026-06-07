@@ -42,6 +42,15 @@ import BanquetRequests from './pages/Admin/BanqueteRequest';
 import BookingDetails from './pages/Admin/BookingDetails';
 import PolicyPage from './pages/PolicyPage';
 
+// PMS pages
+import BookingsList from './pages/Admin/BookingsList';
+import OfflineBooking from './pages/Admin/OfflineBooking';
+import RoomOccupancy from './pages/Admin/RoomOccupancy';
+import RoomHistory from './pages/Admin/RoomHistory';
+import BookingCalendar from './pages/Admin/BookingCalendar';
+import GlobalSearch from './pages/Admin/GlobalSearch';
+import ActivityLogs from './pages/Admin/ActivityLogs';
+
 const ScrollToTopHandler = () => {
   const { pathname } = useLocation();
   React.useEffect(() => {
@@ -101,6 +110,13 @@ const App = () => {
               <Route path='/admin/room-request' element={<RoomRequests />} />
               <Route path='/admin/banquete-request' element={<BanquetRequests /> } />
               <Route path='/admin/bookig-details/:id' element={<BookingDetails />} />
+              <Route path="/admin/bookings" element={<BookingsList />} />
+              <Route path="/admin/offline-booking" element={<OfflineBooking />} />
+              <Route path="/admin/occupancy" element={<RoomOccupancy />} />
+              <Route path="/admin/room-history" element={<RoomHistory />} />
+              <Route path="/admin/calendar" element={<BookingCalendar />} />
+              <Route path="/admin/search" element={<GlobalSearch />} />
+              <Route path="/admin/activity-logs" element={<ActivityLogs />} />
             </Route>
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

@@ -1,6 +1,6 @@
 
 
-import { Room, Banquet, User, UserRole, Booking, Review, GalleryImage } from './types';
+import { Room, Banquet, User, UserRole, Booking, Review, GalleryImage, Activity } from './types';
 
 export const MOCK_USER: User = {
   _id: 'u1',

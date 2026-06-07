@@ -35,10 +35,7 @@ const ListRooms = () => {
 
   const handleToggleConfirm = async () => {
     try {
-    //   await api.updateRoomAvailability(
-    //     selectedRoom._id,
-    //     !selectedRoom.isAvailable
-    //   );
+      await api.toggleRoomActive(selectedRoom._id);
       fetchRooms();
     } catch (error) {
       console.error("Failed to update availability");

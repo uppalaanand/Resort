@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import Room from '../models/Room';
+import Booking from '../models/Booking';
 import { deleteCache, getCache, setCache } from '../utils/cache';
+import { logActivity, ACTIONS } from '../utils/activityLogger';
 
 // @desc    Create a room
 // @route   POST /api/rooms
@@ -113,3 +115,125 @@ export const deleteRoom = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Room not found");
   }
 })
+
+// @desc    Toggle room active/inactive
+// @route   PATCH /api/rooms/:id/toggle
+// @access  Private/Admin
+export const toggleRoom = asyncHandler(async (req: Request, res: Response) => {
+  const room = await Room.findById(req.params.id);
+
+  if (!room) {
+    (res as any).status(404);
+    throw new Error("Room not found");
+  }
+
+  room.isActive = !room.isActive;
+  await room.save();
+
+  await deleteCache(`room:${room._id}`);
+  await deleteCache('rooms:all');
+
+  await logActivity({
+    action: ACTIONS.ROOM_TOGGLED,
+    entityType: 'room',
+    entityId: room._id,
+    performedBy: (req as any).user?._id,
+    details: { isActive: room.isActive },
+    req,
+  });
+
+  (res as any).json(room);
+});
+
+// @desc    Update room status (Available/Reserved/Occupied/Maintenance/Cleaning)
+// @route   PATCH /api/rooms/:id/status
+// @access  Private/Receptionist+Admin
+export const updateRoomStatus = asyncHandler(async (req: Request, res: Response) => {
+  const { status } = req.body;
+  const validStatuses = ['Available', 'Reserved', 'Occupied', 'Maintenance', 'Cleaning'];
+
+  if (!validStatuses.includes(status)) {
+    (res as any).status(400);
+    throw new Error(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
+  }
+
+  const room = await Room.findById(req.params.id);
+  if (!room) {
+    (res as any).status(404);
+    throw new Error("Room not found");
+  }
+
+  room.status = status;
+  if (status === 'Available' || status === 'Maintenance' || status === 'Cleaning') {
+    room.currentBooking = undefined;
+  }
+  await room.save();
+
+  await deleteCache(`room:${room._id}`);
+  await deleteCache('rooms:all');
+
+  await logActivity({
+    action: ACTIONS.ROOM_STATUS_CHANGED,
+    entityType: 'room',
+    entityId: room._id,
+    performedBy: (req as any).user?._id,
+    details: { status },
+    req,
+  });
+
+  (res as any).json(room);
+});
+
+// @desc    Get all rooms (Admin - includes inactive)
+// @route   GET /api/rooms/admin/all
+// @access  Private/Admin
+export const getAllRoomsAdmin = asyncHandler(async (req: Request, res: Response) => {
+  const rooms = await Room.find({}).populate('currentBooking', 'guestName fromDate toDate status');
+  (res as any).json(rooms);
+});
+
+// @desc    Get room occupancy summary
+// @route   GET /api/rooms/occupancy
+// @access  Private/Receptionist+Admin
+export const getRoomOccupancy = asyncHandler(async (req: Request, res: Response) => {
+  const rooms = await Room.find({ isActive: true })
+    .select('name roomNumber status floor currentBooking images')
+    .populate('currentBooking', 'guestName guestPhone fromDate toDate numberOfGuests user status')
+    .sort({ roomNumber: 1 });
+
+  const summary = {
+    total: rooms.length,
+    available: rooms.filter(r => r.status === 'Available').length,
+    reserved: rooms.filter(r => r.status === 'Reserved').length,
+    occupied: rooms.filter(r => r.status === 'Occupied').length,
+    maintenance: rooms.filter(r => r.status === 'Maintenance').length,
+    cleaning: rooms.filter(r => r.status === 'Cleaning').length,
+    rooms,
+  };
+
+  (res as any).json(summary);
+});
+
+// @desc    Get room history (past guests)
+// @route   GET /api/rooms/:id/history
+// @access  Private/Admin
+export const getRoomHistory = asyncHandler(async (req: Request, res: Response) => {
+  const roomId = req.params.id;
+
+  const room = await Room.findById(roomId);
+  if (!room) {
+    (res as any).status(404);
+    throw new Error("Room not found");
+  }
+
+  const history = await Booking.find({ 
+    room: roomId, 
+    status: { $in: ['Completed', 'Confirmed'] }
+  })
+    .populate('user', 'name email phone')
+    .sort({ fromDate: -1 })
+    .limit(100);
+
+  (res as any).json({ room: { name: room.name, roomNumber: room.roomNumber }, history });
+});
+

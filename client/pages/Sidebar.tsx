@@ -1,8 +1,20 @@
-
 import { NavLink } from "react-router-dom";
 import {
-  LayoutDashboard, BedDouble, Building2, Users, Image, Calendar,
-  Star, ClipboardList, PartyPopper, ChevronRight
+  LayoutDashboard,
+  BedDouble,
+  Building2,
+  Users,
+  Image,
+  Calendar as CalendarIcon,
+  Star,
+  ClipboardList,
+  PartyPopper,
+  ChevronRight,
+  Activity,
+  PlusCircle,
+  Search,
+  History,
+  LayoutGrid
 } from "lucide-react";
 
 interface SidebarProps {
@@ -14,21 +26,31 @@ const sidebarSections = [
     label: "Overview",
     links: [
       { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
+      { name: "Room Status Grid", path: "/admin/occupancy", icon: LayoutGrid },
+      { name: "Booking Calendar", path: "/admin/calendar", icon: CalendarIcon },
+    ],
+  },
+  {
+    label: "Operations",
+    links: [
+      { name: "Bookings", path: "/admin/bookings", icon: ClipboardList },
+      { name: "Offline Booking", path: "/admin/offline-booking", icon: PlusCircle },
+      { name: "Room History", path: "/admin/room-history", icon: History },
     ],
   },
   {
     label: "Management",
     links: [
-      { name: "Rooms", path: "/admin/list-rooms", icon: BedDouble },
-      { name: "Banquets", path: "/admin/list-banquets", icon: Building2 },
-      { name: "Users", path: "/admin/list-users", icon: Users },
+      { name: "Rooms List", path: "/admin/list-rooms", icon: BedDouble },
+      { name: "Banquets List", path: "/admin/list-banquets", icon: Building2 },
+      { name: "Guest Profiles", path: "/admin/list-users", icon: Users },
     ],
   },
   {
     label: "Content",
     links: [
       { name: "Gallery", path: "/admin/gallery", icon: Image },
-      { name: "Events", path: "/admin/list-events", icon: Calendar },
+      { name: "Events", path: "/admin/list-events", icon: CalendarIcon },
       { name: "Reviews", path: "/admin/list-reviews", icon: Star },
     ],
   },
@@ -37,6 +59,13 @@ const sidebarSections = [
     links: [
       { name: "Room Requests", path: "/admin/room-request", icon: ClipboardList },
       { name: "Banquet Requests", path: "/admin/banquete-request", icon: PartyPopper },
+    ],
+  },
+  {
+    label: "Audits & Search",
+    links: [
+      { name: "Global Search", path: "/admin/search", icon: Search },
+      { name: "Activity Logs", path: "/admin/activity-logs", icon: Activity },
     ],
   },
 ];

@@ -16,6 +16,11 @@ import userRoutes from './routes/userRoutes';
 import galleryRoutes from './routes/galleryRoutes';
 import eventRoutes from './routes/eventRoutes';
 import roomRequestRoutes from './routes/roomRequestRoutes';
+// PMS Enhancement Routes
+import dashboardRoutes from './routes/dashboardRoutes';
+import activityLogRoutes from './routes/activityLogRoutes';
+import otpRoutes from './routes/otpRoutes';
+import searchRoutes from './routes/searchRoutes';
 
 const app = express();
 
@@ -23,7 +28,7 @@ const app = express();
 // app.use(helmet() as any);
 app.use(cors(corsOptions) as any);
 // app.use(mongoSanitize() as any);
-app.use(hpp() as any);
+// app.use(hpp() as any);
 
 // Body Parsers
 app.use(express.json({ limit: '10mb' }) as any);
@@ -33,10 +38,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 // Rate Limiting
-//app.use('/api/', apiLimiter as any);
-//app.use('/api/auth', authLimiter as any);
+// app.use('/api/', apiLimiter as any);
+// app.use('/api/auth', authLimiter as any);
 
-// API Routes
+// Existing API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/rooms', roomRoutes);
@@ -46,6 +51,12 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/room-requests', roomRequestRoutes);
+
+// PMS Enhancement Routes
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/activity-logs', activityLogRoutes);
+app.use('/api/otp', otpRoutes);
+app.use('/api/search', searchRoutes);
 
 // Default Route
 app.get('/', (req, res) => {

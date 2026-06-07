@@ -37,11 +37,7 @@ const ListBanquets = () => {
 
   const handleToggleConfirm = async () => {
     try {
-      // await api.updateBanquetAvailability(
-      //   selectedBanquet._id,
-      //   !selectedBanquet.isActive
-      // );
-
+      await api.toggleBanquetActive(selectedBanquet._id);
       fetchBanquets();
     } catch (error) {
       console.error("Failed to update banquet availability");

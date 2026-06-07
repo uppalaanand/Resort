@@ -165,3 +165,30 @@ export const deleteBanquet = asyncHandler(async (req: Request, res: Response) =>
         throw new Error('Banquet not found');
     }
 });
+
+// @desc    Toggle banquet active/inactive
+// @route   PATCH /api/banquets/:id/toggle
+// @access  Private/Admin
+export const toggleBanquet = asyncHandler(async (req: Request, res: Response) => {
+  const banquet = await BanquetHall.findById(req.params.id);
+
+  if (!banquet) {
+    (res as any).status(404);
+    throw new Error("Banquet not found");
+  }
+
+  banquet.isActive = !banquet.isActive;
+  await banquet.save();
+
+  await deleteMultipleCache([`banquet:${banquet._id}`, 'banquets:all']);
+
+  (res as any).json(banquet);
+});
+
+// @desc    Get all banquets (Admin - includes inactive)
+// @route   GET /api/banquets/admin/all
+// @access  Private/Admin
+export const getAllBanquetsAdmin = asyncHandler(async (req: Request, res: Response) => {
+  const banquets = await BanquetHall.find({});
+  (res as any).json(banquets);
+});

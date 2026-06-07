@@ -146,7 +146,6 @@ const RoomRequests = () => {
                 <span className="text-lg font-bold text-vp-gold">
                   ₹{booking.totalPrice}
                 </span>
-                {console.log(booking)}
 
                 <div className="flex gap-2">
                   {/* <button className="px-4 py-2 bg-green-600 text-white text-sm rounded-full hover:bg-green-700">

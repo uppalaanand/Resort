@@ -74,7 +74,7 @@ const Booking = () => {
         const extraBedCharge = extraBeds==0?1:extraBeds * EXTRA_BED_COST;
         return diffDays * (item as Room).pricePerNight + extraBedCharge;
     } else {
-        return (item as Banquet);
+        return (item as Banquet).pricePerPlate * guestCount;
     }
   };
 
@@ -162,7 +162,7 @@ const Booking = () => {
             if (!id || !type) return;
 
             try {
-                const res = await api.getBookedDates({ id, type });
+                const res = await api.getBookedDates({ id, type: type as 'room' | 'banquet' });
 
                 // convert string → Date
                 const dates = res.map((d) => new Date(d));

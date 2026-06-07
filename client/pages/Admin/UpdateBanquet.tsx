@@ -59,10 +59,10 @@ const UpdateBanquet = () => {
         setBanquetData({
           name: banquet.name || "",
           description: banquet.description || "",
-          capacity: banquet.capacity || "",
-          pricePerPlate: banquet.pricePerPlate || "",
-          averageRating: banquet.averageRating || "",
-          reviewCount: banquet.reviewCount || "",
+          capacity: banquet.capacity ? banquet.capacity.toString() : "",
+          pricePerPlate: banquet.pricePerPlate ? banquet.pricePerPlate.toString() : "",
+          averageRating: banquet.averageRating ? banquet.averageRating.toString() : "",
+          reviewCount: banquet.reviewCount ? banquet.reviewCount.toString() : "",
         });
 
         setAmenities(banquet.amenities || []);

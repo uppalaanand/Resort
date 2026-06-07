@@ -78,6 +78,37 @@ export const api = {
   updateBookingStatus: (id: string, status: string) =>
     fetchAPI(`/bookings/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
 
+  // PMS Enhancement endpoints
+  getDashboardStats: () => fetchAPI<any>('/dashboard/stats'),
+  getBookingById: (id: string) => fetchAPI<any>(`/bookings/${id}`),
+  approveBooking: (id: string) => fetchAPI<any>(`/bookings/${id}/approve`, { method: 'PATCH' }),
+  rejectBooking: (id: string, reason: string) => fetchAPI<any>(`/bookings/${id}/reject`, { method: 'PATCH', body: JSON.stringify({ rejectionReason: reason }) }),
+  createOfflineBooking: (data: any) => fetchAPI<any>('/bookings/offline', { method: 'POST', body: JSON.stringify(data) }),
+  checkInGuest: (id: string) => fetchAPI<any>(`/bookings/${id}/checkin`, { method: 'PATCH' }),
+  checkOutGuest: (id: string) => fetchAPI<any>(`/bookings/${id}/checkout`, { method: 'PATCH' }),
+  updatePaymentStatus: (id: string, status: string) => fetchAPI<any>(`/bookings/${id}/payment`, { method: 'PATCH', body: JSON.stringify({ paymentStatus: status }) }),
+  getRoomOccupancy: () => fetchAPI<any>('/rooms/occupancy'),
+  getRoomHistory: (id: string) => fetchAPI<any>(`/rooms/${id}/history`),
+  updateRoomStatus: (id: string, status: string) => fetchAPI<any>(`/rooms/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  toggleRoomActive: (id: string) => fetchAPI<any>(`/rooms/${id}/toggle`, { method: 'PATCH' }),
+  toggleBanquetActive: (id: string) => fetchAPI<any>(`/banquets/${id}/toggle`, { method: 'PATCH' }),
+  getAllRoomsAdmin: () => fetchAPI<any>('/rooms/admin/all'),
+  getAllBanquetsAdmin: () => fetchAPI<any>('/banquets/admin/all'),
+  createStaffUser: (data: any) => fetchAPI<any>('/users/staff', { method: 'POST', body: JSON.stringify(data) }),
+  toggleUserActive: (id: string) => fetchAPI<any>(`/users/${id}/toggle`, { method: 'PATCH' }),
+  updateUserById: (id: string, data: any) => fetchAPI<any>(`/users/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getActivityLogs: (params?: any) => {
+    let query = '';
+    if (params) {
+      const parts = Object.entries(params).filter(([_, v]) => v).map(([k, v]) => `${k}=${encodeURIComponent(v as string)}`);
+      if (parts.length) query = '?' + parts.join('&');
+    }
+    return fetchAPI<any>(`/activity-logs${query}`);
+  },
+  globalSearch: (query: string) => fetchAPI<any>(`/search?q=${encodeURIComponent(query)}`),
+  sendOTP: (email: string) => fetchAPI<any>('/otp/send', { method: 'POST', body: JSON.stringify({ email }) }),
+  verifyOTP: (email: string, otp: string) => fetchAPI<any>('/otp/verify', { method: 'POST', body: JSON.stringify({ email, otp }) }),
+
   // Reviews
   createReview: (data: any) => fetchAPI('/reviews', { method: 'POST', body: JSON.stringify(data) }),
   getReviews: (type: 'room' | 'banquet', id: string) => fetchAPI<Review[]>(`/reviews/${type}/${id}`),

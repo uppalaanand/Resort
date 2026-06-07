@@ -12,14 +12,10 @@ interface Review {
   targetType: "room" | "banquet";
   ratingStars: number;
   comment: string;
-  photos: string[];
+  photos?: string[];
   createdAt: string;
-  room?: {
-    name: string;
-  };
-  banquetHall?: {
-    name: string;
-  };
+  room?: any;
+  banquetHall?: any;
 }
 
 const ListReviews = () => {
